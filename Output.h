@@ -1,3 +1,6 @@
+#ifndef _OUTPUT_
+#define _OUTPUT_
+
 /**
 * Output.h - Martin Smith
 *
@@ -17,3 +20,5 @@ char c;
 struct Output *nxt;
 
 }Output;
+
+#endif

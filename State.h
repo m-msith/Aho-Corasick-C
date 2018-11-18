@@ -1,3 +1,6 @@
+#ifndef _STATE_
+#define _STATE_
+
 /**
 * State.h - by Martin Smith
 *
@@ -25,3 +28,5 @@ struct State *fState;
 struct Outpu *ot;
 
 }State;
+
+#endif

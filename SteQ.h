@@ -1,3 +1,6 @@
+#ifndef _STEQ_
+#define _STEQ_
+
 /*
 * SteQ.h - By: Martin Smith
 *
@@ -15,6 +18,8 @@
 typedef struct SteQ{
 
 State *stp;
-struct SteQ nxt;
+struct SteQ *nxt;
 
 }SteQ;
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef _IO_
+#define _IO_
+
 /** 
 * IO.h - By: Martin Smith
 *
@@ -11,3 +14,4 @@
 //Function used for importing patterns from file
 char **IOinP();
 
+#endif

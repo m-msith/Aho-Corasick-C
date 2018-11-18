@@ -1,3 +1,6 @@
+#ifndef _BUILD_
+#define _BUILD_
+
 /*
 * Build.h - By: Martin Smith
 *
@@ -6,4 +9,9 @@
 * Used by AC.c/h 
 */
 
+#include "Trie.h"
 #include "SteQ.h"
+
+int BuildACTrie(char **patts, Globals *glob);
+
+#endif

@@ -6,7 +6,6 @@
 
 #include "AC.h"
 
-
 /**
 *Entry point for the Aho-Corasick program.
 */
@@ -24,6 +23,12 @@ int main(){
 	return 1;
   }
 
+  int retBuild = BuildACTrie(patterns, g);
+  if(retBuild != 0){
+	printf("ERROR Init #3\n");
+	return 1;
+  }
+  
   #if PRINT
     printf("~~~testing patterns~~~\n");
     testPatStore(patterns);

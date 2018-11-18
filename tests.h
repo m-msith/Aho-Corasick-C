@@ -1,3 +1,6 @@
+#ifndef _TESTS_
+#define _TESTS_
+
 /*
 * Contains various test prototypes  
 */
@@ -6,4 +9,4 @@
 
 void testPatStore(char *pats[]);
 
-
+#endif
