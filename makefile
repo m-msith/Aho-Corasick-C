@@ -1,6 +1,6 @@
 #Makefile for the Aho-Corasick-C program
 #Coded by Martin Smith, Algorithm by Alfred Aho and Margaret Corasick 
-PROJ=AC
+PROJ=ac
 OBJDIR=objects
 
 SOURCES = AC.c Build.c IO.c SteQ.c State.c Output.c tests.c

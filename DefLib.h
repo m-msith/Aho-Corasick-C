@@ -8,4 +8,5 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define PRINT 1
+#define PRINT 1 //include print statements
+#define NTS   1 //null terminator size

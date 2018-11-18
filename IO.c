@@ -38,6 +38,8 @@ char **IOinP(){
 	  }
 	}
   }
+ 
+  lngst += NTS; //add room for NULL
 
   rewind(fp);//seek start for read
 
@@ -46,13 +48,13 @@ char **IOinP(){
 	return NULL;
   }
 
-  char **pats = malloc(sizeof(char*) * nPats+1);//plus one for null reference
+  char **pats = malloc(sizeof(char*) * nPats+1);//plus one for null reference string
 
   int i;
 
   for(i = 0; i < nPats; i++){
-	pats[i] = malloc(sizeof(char) * lngst); //init for largest possible member
-	fgets(pats[i], lngst, fp);	
+	pats[i] = malloc(sizeof(char) * lngst + NTS); //init for largest possible member 
+	fgets(pats[i], lngst + NTS, fp); //fgets adds NULL at end of imported string
   }
 
   pats[nPats] = malloc(sizeof(char));

@@ -29,7 +29,9 @@ int main(){
     testPatStore(patterns);
   #endif
 
+  #if PRINT
   printf("\"The Curse of Wandering permeated Amonkhet long before Nicol Bolas. He simply harnessed it.\"\n");
+  #endif
 
 return 0;
 }
@@ -68,7 +70,9 @@ void CleanGlobals(Globals *g){
 
   if(g != NULL){
 	free(g->Root);
-	free(g->Cur);
+	if(g->Root != g->Cur){
+	  free(g->Cur);
+	}
 	free(g);
   }
 
