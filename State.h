@@ -16,17 +16,22 @@
 */
 typedef struct State{
 
-char stc; //At the simplest level, a state is just a character
-int id;
+  char stc; //At the simplest level, a state is just a character
+  int id;
 
-//Pointers for child, sibling, and fail states respectively
-struct State *cState;
-struct State *sState;
-struct State *fState;
+  //Pointers for child, sibling, and fail states respectively
+  struct State *cState;
+  struct State *sState;
+  struct State *fState;
 
-//Output is variable, uses a linked list of characters
-struct Outpu *ot;
+  //Output is variable, uses a linked list of characters
+  struct Outpu *ot;
 
 }State;
+
+/*
+* Init a default state with ID, character, and null pointer values
+*/
+void DefaultStateInit(char c, int id, State *st);
 
 #endif

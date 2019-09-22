@@ -16,10 +16,12 @@
 
 typedef struct Globals{
 
-State *Cur;
-State *Root;
+  State *Cur;
+  State *Root;
 
-int IDCount;
+  int IDCount;
+
+  unsigned long NumPats;
 }Globals;
 
 

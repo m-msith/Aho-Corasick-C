@@ -12,6 +12,6 @@
 #include "Trie.h"
 #include "SteQ.h"
 
-int BuildACTrie(char **patts, Globals *glob);
+int BuildACTrie(char **patts, Globals *g);
 
 #endif

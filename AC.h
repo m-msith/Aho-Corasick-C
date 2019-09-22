@@ -21,4 +21,7 @@ Globals* InitGlobals();
 //Method use for the cleanup of the globals structure
 void CleanGlobals(Globals *g);
 
+//Function that allows for moving along the Trie structure
+void ACgoto(Globals *g, char nxt);
+
 #endif

@@ -12,6 +12,7 @@
 #include "DefLib.h"
 
 //Function used for importing patterns from file
-char **IOinP();
+char **IOinP(int *patNum);
+
 
 #endif

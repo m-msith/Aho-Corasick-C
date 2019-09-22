@@ -13,10 +13,13 @@
 * of the patterns found in the file. patterns.txt is made to contain a newline dilimitaed list of patterns.
 * to build into the trie.
 */
-char **IOinP(){
+char **IOinP(int *patNum){
 
   char tmpC;
-  int nPats = 0, lngst = 0, tmpLen = 0;
+  int  lngst = 0, tmpLen = 0;
+
+  char **pats;
+  int *nPats = patNum;
 
   //obtain file metadata
   FILE *fp = fopen("files.d/patterns.txt", "r");
@@ -29,8 +32,8 @@ char **IOinP(){
   while(tmpC != EOF){
 	tmpLen++;
 	tmpC = fgetc(fp);
-	if(tmpC == '\n'){
-	  nPats++;
+	if((tmpC == '\n') || (tmpC == '\r')){
+	  *nPats = *nPats + 1;
 
 	  if(tmpLen > lngst){
 		lngst = tmpLen;
@@ -46,19 +49,22 @@ char **IOinP(){
   if(fp == NULL){
 	printf("Error during pattern import #2\n");
 	return NULL;
-  }
+  } 
 
-  char **pats = malloc(sizeof(char*) * nPats+1);//plus one for null reference string
+
+  *nPats = *nPats + 1; //plus one for null ref string
+
+  pats = malloc(sizeof(char*) * (*nPats));
 
   int i;
 
-  for(i = 0; i < nPats; i++){
+  for(i = 0; i < *nPats; i++){
 	pats[i] = malloc(sizeof(char) * lngst + NTS); //init for largest possible member 
 	fgets(pats[i], lngst + NTS, fp); //fgets adds NULL at end of imported string
   }
 
-  pats[nPats] = malloc(sizeof(char));
-  pats[nPats] = "\0"; //set last entry to null, functioning as collection terminator
+  pats[*nPats] = malloc(sizeof(char));
+  pats[*nPats] = "\0"; //set last entry to null, functioning as collection terminator
 
   fclose(fp);
 
