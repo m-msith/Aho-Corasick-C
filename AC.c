@@ -34,7 +34,7 @@ int main(){
     printf("~~~IO Init Pass~~~\n");
   #endif
 
-  int badRetBuild = BuildACTrie(patterns, g);
+  char badRetBuild = BuildACTrie(patterns, g);
   if(badRetBuild == TRUE){
 	printf("ERROR Init #3\n");
 	return 1;
@@ -107,35 +107,38 @@ void CleanGlobals(Globals *g){
 /**
 *Take care of going to the next state in the Trie
 */
-void ACgoto(Globals *g, char nxt){
+char ACgoto(Globals *g, char nxt){
 
   char pass = FALSE;
+  
+  //check throuh current's child, if it has one, and all its siblings to see if we can proceed    
+  State *cmpSt = g->Cur;
+  	
+  if(cmpSt->cState != NULL){
 
-  //check throuh current's child and all its siblings to see if we can proceed    
-  State *cmpSt = g->Cur->cState;
-
-  do{
+	//move to child if it's present
+	cmpSt = cmpSt->cState;
 	
-	//if we find a match exit loop
 	if(cmpSt->stc == nxt){
-	  g->Cur = cmpSt;
 	  pass = TRUE;
-	  break;	
+	  g->Cur = cmpSt;
 	}
-	//move to the child's sibling state
-	else{		
-	  cmpSt = cmpSt->sState;
+	else{
+
+	  //check the siblings for a match
+	  while(cmpSt->sState != NULL){
+
+		cmpSt = cmpSt->sState;
+		if(cmpSt->stc == nxt){
+		  pass = TRUE;
+		  g->Cur = cmpSt;
+		}
+	  }
+
 	}
 
-  }while(cmpSt != NULL);
+  }
 
-  //goto fail state if we can't move on
-  if(pass){
-	//we already moved
-  }
-  else{	
-	//goto fail state
-	g->Cur = g->Cur->fState;
-  }
+  return pass;
 
 }

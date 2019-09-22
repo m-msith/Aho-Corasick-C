@@ -10,7 +10,7 @@ void testPatStore(char **pats){
   char **hold = pats;
   
   do{
-	printf("Found string at level %c, memaddr: %p : %s",**pats, pats, *pats);
+	printf("Found string at level %c, memaddr: %p : %s\n",**pats, pats, *pats);
   }while(**++pats != '\0');
   
   //reset pointer to beginning

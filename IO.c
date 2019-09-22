@@ -61,6 +61,14 @@ char **IOinP(int *patNum){
   for(i = 0; i < *nPats; i++){
 	pats[i] = malloc(sizeof(char) * lngst + NTS); //init for largest possible member 
 	fgets(pats[i], lngst + NTS, fp); //fgets adds NULL at end of imported string
+
+	//get rid of newline
+	int j = 0;	
+	for(j = 0; j < lngst+NTS; j++){
+	  if((pats[i][j] == '\n') || (pats[i][j] == '\r')){
+		pats[i][j] = '\0';
+	  }
+	}
   }
 
   pats[*nPats] = malloc(sizeof(char));
