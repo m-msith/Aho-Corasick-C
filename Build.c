@@ -26,6 +26,9 @@ char BuildACTrie(char **patts, Globals *g){
 
 	  //cycle to the first available entry point
 	  while(ACgoto(g, patts[row][col]) == TRUE){}	  
+	  
+	  //add new element to the tree at the appropriate position
+
 	  //only ever one child element, else have to use the child's sibling element
 	  if(g->Cur->cState == NULL){
 	  	g->Cur->cState = malloc(sizeof(State));
@@ -62,8 +65,10 @@ char BuildACTrie(char **patts, Globals *g){
 	  
 	  //defaultState init
 	  DefaultStateInit(patts[row][col], g->IDCount++, g->Cur);
-	  
-	  printf("%c", g->Cur->stc);
+
+	  #ifdef PRINT	  
+		printf("%c", g->Cur->stc);
+	  #endif
 
 	  col++;
 	}
@@ -76,6 +81,77 @@ char BuildACTrie(char **patts, Globals *g){
 	#endif
   }
 
+  #ifdef PRINT
+	printf("\n~~~Goto Structure Build Completed~~~\n\n");
+  #endif
+
+  //add the failure traces in
+
+  //create a first in first out state queue for failure additions
+  FifoSteQ *faQ = malloc(sizeof(FifoSteQ *));
+
+  State *qAddSt = g->Root->cState;
+  qAddSt->fState = g->Root;
+  InitFifoSteQ(faQ, qAddSt);
+
+  //set the initial failure state of level one nodes to the root, null node.
+  //add them to the failure addition queue to be considered as failure states for the next level input
+  while(qAddSt->sState != NULL){
+	#ifdef PRINT
+	  printf("Failure Q: Added state %c to the queue\n", qAddSt->stc);
+	#endif
+
+	qAddSt = qAddSt->sState;
+	
+	qAddSt->fState = g->Root;
+	PushFifoSteQ(faQ, qAddSt);
+
+  }
+  #ifdef PRINT
+	printf("Failure Q: Added state %c to the queue\n", qAddSt->stc);
+  #endif
+ 
+  //go through queued states until there are no more, signifying that we got through the whole trie 
+  while(faQ->head != NULL){
+
+	//pop the queue
+	State *popSt = PopFifoSteQ(faQ);	
+//	printf("popping this one: %c\n", popSt->stc);
+
+	//visit each of the possible next states of the popped state		  	 
+	State *gtSt = popSt->cState;
+
+	while(gtSt != NULL){
+	
+	  //add the next level states to the fifo queue
+	  //this will get us through the entire queue
+	  PushFifoSteQ(faQ, gtSt);
+	  #ifdef PRINT
+//		printf("Failure Q: Added state %c to the queue\n", gtSt->stc);	  
+	  #endif
+	 
+	  //get and goto every failstate to see if it is a failstate
+	  //for the node being tested for failstates
+	  State *fSt = GetFailState(popSt); 	    
+	  g->Cur = fSt;
+	  while(ACgoto(g,gtSt->stc) == FALSE){
+	  	if(g->Cur->stc == '\0'){
+		  break;
+		}
+		fSt = GetFailState(fSt);
+		g->Cur = fSt;
+	  }
+	
+	  gtSt->fState = g->Cur;
+	  
+	  printf(" \"%c\" set to fail at \"%c\"\n", gtSt->stc, gtSt->fState->stc);	
+   
+	  gtSt = gtSt->sState;
+	}
+
+	
+  } 
   return retVal;
+
 }
 

@@ -42,15 +42,9 @@ int main(){
   
   #ifdef PRINT
     printf("~~~Build Init Pass~~~\n");
-  #endif
-
-  #ifdef PRINT
     printf("~~~testing patterns~~~\n");
     testPatStore(patterns);
-  #endif
-
-  #ifdef PRINT
-  printf("\"The Curse of Wandering permeated Amonkhet long before Nicol Bolas. He simply harnessed it.\"\n");
+    printf("\"The Curse of Wandering permeated Amonkhet long before Nicol Bolas. He simply harnessed it.\"\n");
   #endif
 
 return 0;
@@ -111,7 +105,7 @@ char ACgoto(Globals *g, char nxt){
 
   char pass = FALSE;
   
-  //check throuh current's child, if it has one, and all its siblings to see if we can proceed    
+  //check current's child, if it has one, and all its siblings to see if we can proceed    
   State *cmpSt = g->Cur;
   	
   if(cmpSt->cState != NULL){
@@ -129,9 +123,11 @@ char ACgoto(Globals *g, char nxt){
 	  while(cmpSt->sState != NULL){
 
 		cmpSt = cmpSt->sState;
+		//if we found a match, break out of searching through siblings
 		if(cmpSt->stc == nxt){
 		  pass = TRUE;
 		  g->Cur = cmpSt;
+		  break;
 		}
 	  }
 
@@ -141,4 +137,11 @@ char ACgoto(Globals *g, char nxt){
 
   return pass;
 
+}
+
+/**
+*Travel to a state's failure trace location
+*/
+State *GetFailState(State *st){
+  return st->fState;
 }
