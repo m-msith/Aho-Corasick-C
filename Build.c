@@ -74,6 +74,9 @@ char BuildACTrie(char **patts, Globals *g){
 	}
 
 	//reset to root for next pattern or task
+    //during build, this reset only takes place after the ingestion
+    //of one pattern to properly build upon itself with the next one
+    //which will either share a branch or build a new one
 	g->Cur = g->Root;
 	
 	#ifdef PRINT
@@ -90,6 +93,7 @@ char BuildACTrie(char **patts, Globals *g){
   //create a first in first out state queue for failure additions
   FifoSteQ *faQ = malloc(sizeof(FifoSteQ *));
 
+  //first add first child state of the trie
   State *qAddSt = g->Root->cState;
   qAddSt->fState = g->Root;
   InitFifoSteQ(faQ, qAddSt);
@@ -103,6 +107,7 @@ char BuildACTrie(char **patts, Globals *g){
 
 	qAddSt = qAddSt->sState;
 	
+    //1st level always fails to root node
 	qAddSt->fState = g->Root;
 	PushFifoSteQ(faQ, qAddSt);
 
@@ -125,7 +130,9 @@ char BuildACTrie(char **patts, Globals *g){
 	
 	  //add the next level states to the fifo queue
 	  //this will get us through the entire queue
+      //as we cycle until empty
 	  PushFifoSteQ(faQ, gtSt);
+      
 	  #ifdef PRINT
 //		printf("Failure Q: Added state %c to the queue\n", gtSt->stc);	  
 	  #endif
@@ -134,23 +141,41 @@ char BuildACTrie(char **patts, Globals *g){
 	  //for the node being tested for failstates
 	  State *fSt = GetFailState(popSt); 	    
 	  g->Cur = fSt;
+      
+      //this loop backtraces through the data structure to find the closest (level)
+      //failstate. The failstate is a point where the search could continue
+      //on a different branch, if the current branch is deemed not tennable.
+      //In other words, the failstate fails to the nearest possibility of 
+      //a match, whether it start over or continue on a different branch
 	  while(ACgoto(g,gtSt->stc) == FALSE){
+        
+        //break if we're the root node, it's the last possible fail point 
 	  	if(g->Cur->stc == '\0'){
 		  break;
 		}
-		fSt = GetFailState(fSt);
-		g->Cur = fSt;
+        else{
+        //otherwise, continue to backtrack until we succeed in moving foward
+          fSt = GetFailState(fSt);
+          g->Cur = fSt;
+        }
 	  }
 	
+      //whether it be the root node or a different branch, we have found our 
+      //next possible tennable branch, set the fail to that point
 	  gtSt->fState = g->Cur;
 	  
 	  printf(" \"%c\" set to fail at \"%c\"\n", gtSt->stc, gtSt->fState->stc);	
    
+      //we process through the trie level by level, so, move through siblings
+      //and after processing the last sibling, move to the next child in the 
+      //fifo queue
 	  gtSt = gtSt->sState;
 	}
 
 	
   } 
+  
+  
   return retVal;
 
 }
