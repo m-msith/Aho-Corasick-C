@@ -9,7 +9,17 @@
 * Used by AC.c/h SteQ.c/h 
 */
 
-#include "Output.h"
+#include "DefLib.h"
+
+/**
+* The Output structure is a linked list of characters, using null as deliminating char with double null signaling end
+*/
+typedef struct Output{
+
+char c;
+struct Output *nxt;
+
+}Output;
 
 /**
 * State the structure for a given point in the AC !state! trie. 
@@ -25,7 +35,9 @@ typedef struct State{
   struct State *fState;
 
   //Output is variable, uses a linked list of characters
-  struct Outpu *ot;
+  struct Output *ot;
+  //include ref to head for reset
+  struct Output *ot_head;
 
 }State;
 

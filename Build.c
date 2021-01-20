@@ -21,67 +21,105 @@ char BuildACTrie(char **patts, Globals *g){
 
 	//reset counting var
 	int col = 0;
-			
+	
 	while(patts[row][col] != '\0'){
 
 	  //cycle to the first available entry point
-	  while(ACgoto(g, patts[row][col]) == TRUE){}	  
+	  while(ACgoto(g, patts[row][col]) == TRUE){
+		col++;
+	  }	  
 	  
-	  //add new element to the tree at the appropriate position
+	  //add new element to the tree at the appropriate position if we didn't cycle to the last value
+	  if(patts[row][col] != '\0'){
+		  
+		  //only ever one child element, else have to use the child's sibling element
+		  if(g->Cur->cState == NULL){
+			g->Cur->cState = malloc(sizeof(State));
 
-	  //only ever one child element, else have to use the child's sibling element
-	  if(g->Cur->cState == NULL){
-	  	g->Cur->cState = malloc(sizeof(State));
+			if(g->Cur->cState == NULL){
+			  //failed allocation
+			  printf("ERROR Build #1\n");
+			  return 1;		  
+			}
+					
+			g->Cur = g->Cur->cState;		
+		  }
+		  //go to child's sibling state if there is a child state already
+		  else{
 
-		if(g->Cur->cState == NULL){
-		  //failed allocation
-		  printf("ERROR Build #1\n");
-	  	  return 1;		  
-		}
-				
-		g->Cur = g->Cur->cState;		
-	  }
-	  //go to child's sibling state if there is a child state already
-	  else{
+			g->Cur = g->Cur->cState;	  	
 
-		g->Cur = g->Cur->cState;	  	
+			//need to cycle through the sibling states
+			while(g->Cur->sState != NULL){
+				g->Cur = g->Cur->sState;
+			}
 
-		//need to cycle through the sibling states
-		while(g->Cur->sState != NULL){
+			g->Cur->sState = malloc(sizeof(State));
+			
+			if(g->Cur->sState == NULL){
+			  //failed allocation
+			  printf("ERROR BUILD #2\n");
+			  return 1;
+			}
+			
 			g->Cur = g->Cur->sState;
-		}
 
-	  	g->Cur->sState = malloc(sizeof(State));
-		
-		if(g->Cur->sState == NULL){
-		  //failed allocation
-		  printf("ERROR BUILD #2\n");
-		  return 1;
-		}
-	  	
-		g->Cur = g->Cur->sState;
-
+		  }
+		  
+		  //defaultState init
+		  DefaultStateInit(patts[row][col], g->IDCount++, g->Cur);
+	  
+		  col++;
 	  }
 	  
-	  //defaultState init
-	  DefaultStateInit(patts[row][col], g->IDCount++, g->Cur);
-
 	  #ifdef PRINT	  
-		printf("%c", g->Cur->stc);
+		printf("\"%c\" %p\n", g->Cur->stc, g->Cur);
 	  #endif
 
-	  col++;
 	}
 
+	#ifdef PRINT
+	  printf("---inserted pattern num %d into the trie---\n", row);	
+	#endif
+
+	/* reset col */
+	col = 0;
+
+	g->Cur->ot = malloc(sizeof(Output));
+	g->Cur->ot_head = malloc(sizeof(Output));
+	g->Cur->ot_head = g->Cur->ot;
+	
+	#ifdef PRINT
+	  printf("adding output: ");
+	#endif
+	
+	/* Add the output */
+	while(patts[row][col] != '\0'){
+		
+		g->Cur->ot->c = patts[row][col];
+		
+		#ifdef PRINT
+			printf("%c", g->Cur->ot->c);
+		#endif
+		
+		g->Cur->ot->nxt = malloc(sizeof(Output));
+		g->Cur->ot = g->Cur->ot->nxt;
+		
+		col++;
+	}
+	
+	/* set to null to delimit, also good practice to have this for strings */
+	g->Cur->ot->c = '\0';
+	
+	#ifdef PRINT
+	  printf(". First char %c, number of chars %d, for state '%c' %p\n", g->Cur->ot_head->c, col, g->Cur->stc, g->Cur);
+	#endif
+	
 	//reset to root for next pattern or task
     //during build, this reset only takes place after the ingestion
     //of one pattern to properly build upon itself with the next one
     //which will either share a branch or build a new one
 	g->Cur = g->Root;
-	
-	#ifdef PRINT
-	  printf(" :: inserted pattern num %d into the trie\n", row);	
-	#endif
   }
 
   #ifdef PRINT
@@ -91,7 +129,7 @@ char BuildACTrie(char **patts, Globals *g){
   //add the failure traces in
 
   //create a first in first out state queue for failure additions
-  FifoSteQ *faQ = malloc(sizeof(FifoSteQ *));
+  FifoSteQ *faQ = malloc(sizeof(FifoSteQ));
 
   //first add first child state of the trie
   State *qAddSt = g->Root->cState;
@@ -164,8 +202,49 @@ char BuildACTrie(char **patts, Globals *g){
       //next possible tennable branch, set the fail to that point
 	  gtSt->fState = g->Cur;
 	  
-	  printf(" \"%c\" set to fail at \"%c\"\n", gtSt->stc, gtSt->fState->stc);	
-   
+	  #ifdef PRINT
+		printf(" \"%c\" set to fail at \"%c\" %p \n", gtSt->stc, gtSt->fState->stc, gtSt->fState);	
+	  #endif
+	  
+	  /* Take care of Output, we add if the fail state has an output, and 
+		 if it's not the root node */
+	  if(gtSt->fState->ot_head != NULL){
+		
+		if(gtSt->ot == NULL){
+			gtSt->ot = malloc(sizeof(Output));
+			gtSt->ot_head = malloc(sizeof(Output));
+			gtSt->ot_head = gtSt->ot;
+		}
+		
+		Output *tmp = gtSt->fState->ot_head;
+		
+		#ifdef PRINT
+		  printf("appending output value: '%c'", gtSt->fState->ot_head->c);
+		#endif
+		
+		/* Add fail trace outputs if any */
+		while(tmp != NULL){
+			
+			#ifdef PRINT
+			  printf("%c", tmp->c);
+			#endif
+			
+			gtSt->ot->c = tmp->c;
+			
+			tmp = tmp->nxt;
+			
+			gtSt->ot->nxt = malloc(sizeof(Output));
+			gtSt->ot = gtSt->ot->nxt;
+			
+		}
+		
+		#ifdef PRINT
+		  printf("\n first output char: %c\n", gtSt->ot_head->c);
+		#endif
+	  }
+	  
+	  
+	  
       //we process through the trie level by level, so, move through siblings
       //and after processing the last sibling, move to the next child in the 
       //fifo queue

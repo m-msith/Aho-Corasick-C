@@ -8,7 +8,6 @@
 *
 * Used by Build.c/h
 */
-
 #include "State.h"
 
 /*

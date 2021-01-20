@@ -107,9 +107,11 @@ char ACgoto(Globals *g, char nxt){
   
   //check current's child, if it has one, and all its siblings to see if we can proceed    
   State *cmpSt = g->Cur;
-  	
+  
+  
+	
   if(cmpSt->cState != NULL){
-
+	//printf("GOTO: current: %c, childstate of %c, moving to %c\n", g->Cur->stc, g->Cur->cState->stc, nxt);
 	//move to child if it's present
 	cmpSt = cmpSt->cState;
 	

@@ -17,4 +17,5 @@ void DefaultStateInit(char c, int id, State *st){
   st->sState = NULL;
   st->fState = NULL;
   st->ot = NULL;
+  st->ot_head = NULL;
 }

@@ -22,8 +22,8 @@ void InitSteQ(SteQ *stq, State *s){
 */
 void InitFifoSteQ(FifoSteQ *fq, State *s){
 
-  fq->head = malloc(sizeof(SteQ *));
-  fq->end = malloc(sizeof(SteQ *));
+  fq->head = malloc(sizeof(SteQ));
+  fq->end = malloc(sizeof(SteQ));
   
   InitSteQ(fq->head, s);
   fq->end = fq->head;
@@ -35,7 +35,7 @@ void InitFifoSteQ(FifoSteQ *fq, State *s){
 */
 void PushFifoSteQ(FifoSteQ *fq, State *s){
 
-  fq->end->nxt = malloc(sizeof(SteQ *));
+  fq->end->nxt = malloc(sizeof(SteQ));
 
   if(fq->end->nxt == NULL){
 	printf("FAILED MALLOC STATE QUEUE PUSH\n");
