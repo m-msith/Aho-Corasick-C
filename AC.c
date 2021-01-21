@@ -7,47 +7,47 @@
 
 
 /**
-*Entry point for the Aho-Corasick program.
+* Entry point for the Aho-Corasick program.
 */
 int main(){
 
-  Globals *g = InitGlobals();
-  if(g == NULL){
-	printf("ERROR Init #1\n");
-	return 1;
-  }
+	Globals *g = InitGlobals();
+	if(g == NULL){
+		printf("ERROR Init #1\n");
+		return 1;
+	}
 
-  #ifdef PRINT
-    printf("~~~Global Init Pass~~~\n");
-  #endif
+	#ifdef PRINT
+		printf("~~~Global Init Pass~~~\n");
+	#endif
 
-  int patNum = 0;
-  char **patterns = IOinP(&patNum);
-  if(patterns == NULL){
-	printf("ERROR Init #2\n");
-	return 1;
-  }
+	int patNum = 0;
+	char **patterns = IOinP(&patNum);
+	if(patterns == NULL){
+		printf("ERROR Init #2\n");
+		return 1;
+	}
 
-  g->NumPats = patNum;
+	g->NumPats = patNum;
 
-  #ifdef PRINT
-    printf("~~~IO Init Pass~~~\n");
-  #endif
+	#ifdef PRINT
+		printf("~~~IO Init Pass~~~\n");
+	#endif
 
-  char badRetBuild = BuildACTrie(patterns, g);
-  if(badRetBuild == TRUE){
-	printf("ERROR Init #3\n");
-	return 1;
-  }
-  
-  #ifdef PRINT
-    printf("~~~Build Init Pass~~~\n");
-    printf("~~~testing patterns~~~\n");
-    testPatStore(patterns);
-    printf("\"The Curse of Wandering permeated Amonkhet long before Nicol Bolas. He simply harnessed it.\"\n");
-  #endif
+	char badRetBuild = BuildACTrie(patterns, g);
+	if(badRetBuild == TRUE){
+		printf("ERROR Init #3\n");
+		return 1;
+	}
 
-return 0;
+	#ifdef PRINT
+		printf("~~~Build Init Pass~~~\n");
+		printf("~~~testing patterns~~~\n");
+		testPatStore(patterns);
+		printf("\"The Curse of Wandering permeated Amonkhet long before Nicol Bolas. He simply harnessed it.\"\n");
+	#endif
+
+	return 0;
 }
 
 
@@ -57,30 +57,30 @@ return 0;
 */
 Globals* InitGlobals(){
 
-  Globals *g = malloc(sizeof(Globals));
-  if(g == NULL){
-	return NULL;
-  }
+	Globals *g = malloc(sizeof(Globals));
+	if(g == NULL){
+		return NULL;
+	}
 
-  g->Root = malloc(sizeof(State));
-  if(g->Root == NULL){
-	return NULL;
-  }
+	g->Root = malloc(sizeof(State));
+	if(g->Root == NULL){
+		return NULL;
+	}
 
-  //init root
-  DefaultStateInit('\0', 0, g->Root);
+	/* init root */
+	DefaultStateInit('\0', 0, g->Root);
 
-  //root node is null and fails to itself
-  g->Root->fState = g->Root;
+	/* root node is null and fails to itself */
+	g->Root->fState = g->Root;
 
-  g->Cur = g->Root;
-  if(g->Cur == NULL){
-	return NULL;
-  }
+	g->Cur = g->Root;
+	if(g->Cur == NULL){
+		return NULL;
+	}
 
-  g->IDCount = 0;
+	g->IDCount = 0;
 
-  return g;
+	return g;
 }
 
 /**
@@ -88,13 +88,16 @@ Globals* InitGlobals(){
 */
 void CleanGlobals(Globals *g){
 
-  if(g != NULL){
-	free(g->Root);
-	if(g->Root != g->Cur){
-	  free(g->Cur);
+	if(g != NULL){
+		
+		free(g->Root);
+		
+		if(g->Root != g->Cur){
+			free(g->Cur);
+		}
+		
+		free(g);
 	}
-	free(g);
-  }
 
 }
 
@@ -103,41 +106,44 @@ void CleanGlobals(Globals *g){
 */
 char ACgoto(Globals *g, char nxt){
 
-  char pass = FALSE;
-  
-  //check current's child, if it has one, and all its siblings to see if we can proceed    
-  State *cmpSt = g->Cur;
-  
-  
-	
-  if(cmpSt->cState != NULL){
-	//printf("GOTO: current: %c, childstate of %c, moving to %c\n", g->Cur->stc, g->Cur->cState->stc, nxt);
-	//move to child if it's present
-	cmpSt = cmpSt->cState;
-	
-	if(cmpSt->stc == nxt){
-	  pass = TRUE;
-	  g->Cur = cmpSt;
-	}
-	else{
+	char pass = FALSE;
 
-	  //check the siblings for a match
-	  while(cmpSt->sState != NULL){
+	/* check current's child, if it has one, and all its siblings to see if we can proceed */
+	State *cmpSt = g->Cur;
 
-		cmpSt = cmpSt->sState;
-		//if we found a match, break out of searching through siblings
+	if(cmpSt->cState != NULL){
+		
+		/* printf("GOTO: current: %c, childstate of %c, moving to %c\n", g->Cur->stc, g->Cur->cState->stc, nxt);
+		* move to child if it's present */
+		cmpSt = cmpSt->cState;
+
 		if(cmpSt->stc == nxt){
-		  pass = TRUE;
-		  g->Cur = cmpSt;
-		  break;
+			
+			pass = TRUE;
+			g->Cur = cmpSt;
+			
 		}
-	  }
+		else{
+
+			/* check the siblings for a match */
+			while(cmpSt->sState != NULL){
+
+				cmpSt = cmpSt->sState;
+				
+				/* if we found a match, break out of searching through siblings */
+				if(cmpSt->stc == nxt){
+					pass = TRUE;
+					g->Cur = cmpSt;
+					break;
+				}
+			
+			}
+
+		}
 
 	}
 
-  }
-
-  return pass;
+	return pass;
 
 }
 
@@ -145,5 +151,5 @@ char ACgoto(Globals *g, char nxt){
 *Travel to a state's failure trace location
 */
 State *GetFailState(State *st){
-  return st->fState;
+	return st->fState;
 }

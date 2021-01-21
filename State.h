@@ -16,8 +16,8 @@
 */
 typedef struct Output{
 
-char c;
-struct Output *nxt;
+	char c;
+	struct Output *nxt;
 
 }Output;
 
@@ -26,18 +26,18 @@ struct Output *nxt;
 */
 typedef struct State{
 
-  char stc; //At the simplest level, a state is just a character
-  int id;
+	char stc; /* At the simplest level, a state is just a character */
+	int id;
 
-  //Pointers for child, sibling, and fail states respectively
-  struct State *cState;
-  struct State *sState;
-  struct State *fState;
+	/* Pointers for child, sibling, and fail states respectively */
+	struct State *cState;
+	struct State *sState;
+	struct State *fState;
 
-  //Output is variable, uses a linked list of characters
-  struct Output *ot;
-  //include ref to head for reset
-  struct Output *ot_head;
+	/* Output is variable, uses a linked list of characters */
+	struct Output *ot;
+	/* include ref to head for reset */
+	struct Output *ot_head;
 
 }State;
 

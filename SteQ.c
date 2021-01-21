@@ -5,6 +5,7 @@
 *
 * Used by Build.c
 */
+
 #include "SteQ.h"
 
 /*
@@ -12,8 +13,8 @@
 */
 void InitSteQ(SteQ *stq, State *s){
 
-  stq->stp = s;
-  stq->nxt = NULL; 
+	stq->stp = s;
+	stq->nxt = NULL; 
 
 }
 
@@ -22,11 +23,11 @@ void InitSteQ(SteQ *stq, State *s){
 */
 void InitFifoSteQ(FifoSteQ *fq, State *s){
 
-  fq->head = malloc(sizeof(SteQ));
-  fq->end = malloc(sizeof(SteQ));
-  
-  InitSteQ(fq->head, s);
-  fq->end = fq->head;
+	fq->head = malloc(sizeof(SteQ));
+	fq->end = malloc(sizeof(SteQ));
+
+	InitSteQ(fq->head, s);
+	fq->end = fq->head;
 
 }
 
@@ -35,21 +36,21 @@ void InitFifoSteQ(FifoSteQ *fq, State *s){
 */
 void PushFifoSteQ(FifoSteQ *fq, State *s){
 
-  fq->end->nxt = malloc(sizeof(SteQ));
+	fq->end->nxt = malloc(sizeof(SteQ));
 
-  if(fq->end->nxt == NULL){
-	printf("FAILED MALLOC STATE QUEUE PUSH\n");
-  }
+	if(fq->end->nxt == NULL){
+		printf("FAILED MALLOC STATE QUEUE PUSH\n");
+	}
 
-  fq->end = fq->end->nxt;
-  
-  InitSteQ(fq->end, s);
+	fq->end = fq->end->nxt;
 
-  //todo
-  //band-aid for the moment, may be the right fix though, need to investigate
-  if(fq->head == NULL){
-	fq->head = fq->end;
-  }
+	InitSteQ(fq->end, s);
+
+	//todo
+	/* band-aid for the moment, may be the right fix though, need to investigate */
+	if(fq->head == NULL){
+		fq->head = fq->end;
+	}
   
 }
 
@@ -59,28 +60,28 @@ void PushFifoSteQ(FifoSteQ *fq, State *s){
 */
 State *PopFifoSteQ(FifoSteQ *fq){
 
-  State *retSt;
+	State *retSt;
 
-  if(fq->head != NULL){
+	if(fq->head != NULL){
 
-	retSt = fq->head->stp;
-  
-	//change head position to the next state
-	SteQ* rem = fq->head;
-	fq->head = fq->head->nxt;
+		retSt = fq->head->stp;
 
-	//don't kill the state in the process of removal/freeing of the head queue member
-	rem->stp = NULL;
-	free(rem);
-  }
-  else{
+		/* change head position to the next state */
+		SteQ* rem = fq->head;
+		fq->head = fq->head->nxt;
 
-	retSt = NULL;
+		/* don't kill the state in the process of removal/freeing of the head queue member */
+		rem->stp = NULL;
+		free(rem);
+		
+	}
+	else{
 
-  }
-  
+		retSt = NULL;
 
-  return retSt;
+	}
+
+	return retSt;
 
 }
 

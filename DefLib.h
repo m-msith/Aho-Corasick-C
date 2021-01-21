@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define PRINT   //include print statements
-#define NTS   1 //null terminator size
+#define PRINT /* include print statements */
+#define NTS 1 /* null terminator size */
 
 #define TRUE 1
 #define FALSE 0

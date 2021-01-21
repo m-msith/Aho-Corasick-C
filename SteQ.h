@@ -16,8 +16,8 @@
 */
 typedef struct SteQ{
 
-  State *stp;
-  struct SteQ *nxt;
+	State *stp;
+	struct SteQ *nxt;
 
 }SteQ;
 
@@ -31,8 +31,8 @@ typedef struct SteQ{
 */
 typedef struct FifoSteQ{
 
-  SteQ *head;
-  SteQ *end;
+	SteQ *head;
+	SteQ *end;
 
 }FifoSteQ;
 

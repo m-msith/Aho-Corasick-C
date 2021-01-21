@@ -1,7 +1,6 @@
 #ifndef _TRIE_
 #define _TRIE_
 
-
 /* 
 * Trie.h
 *
@@ -16,12 +15,13 @@
 
 typedef struct Globals{
 
-  State *Cur;
-  State *Root;
+	State *Cur;
+	State *Root;
 
-  int IDCount;
+	int IDCount;
 
-  unsigned long NumPats;
+	unsigned long NumPats;
+	
 }Globals;
 
 
