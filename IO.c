@@ -9,11 +9,11 @@
 #include "DefLib.h"
 
 /*
-* IOinP is responsible for reading through the patterns.txt file and returning in memory representations
+* IOinP is responsible for reading through a patterns .txt file and returning in memory representations
 * of the patterns found in the file. patterns.txt is made to contain a newline dilimitaed list of patterns.
 * to build into the trie.
 */
-char **IOinP(int *patNum){
+char **IOinP(int *patNum, char *fname){
 
 	char tmpC;
 	int  lngst = 0, tmpLen = 0;
@@ -22,17 +22,18 @@ char **IOinP(int *patNum){
 	int *nPats = patNum;
 
 	/* obtain file metadata */
-	FILE *fp = fopen("files.d/patterns.txt", "r");
+	FILE *fp = fopen(fname, "r");
 
 	if(fp == NULL){
 		printf("Error during pattern import #1\n");
 		return NULL;
 	}
 
+	char prevchar = '\0';
 	while(tmpC != EOF){
 		tmpLen++;
 		tmpC = fgetc(fp);
-		if((tmpC == '\n') || (tmpC == '\r')){
+		if(((tmpC == '\n') || (tmpC == '\r')) && ((prevchar != '\n') && (prevchar != '\r'))){
 			*nPats = *nPats + 1;
 
 			if(tmpLen > lngst){
@@ -40,6 +41,8 @@ char **IOinP(int *patNum){
 				tmpLen = 0;
 			}
 		}
+		
+		prevchar = tmpC;
 	}
 
 	/* add room for NULL */
@@ -57,29 +60,74 @@ char **IOinP(int *patNum){
 	*nPats = *nPats + 1; 
 
 	pats = malloc(sizeof(char*) * (*nPats));
-
-	int i = 0;
-	for(i = 0; i < *nPats; i++){
+	/* allocation failure check */
+	if(pats == NULL){
+		printf("Error during pattern import #3\n");
+		return NULL;
+	}
+	
+	unsigned long i = 0;
+	tmpC = '\0';
+	
+	/* init for largest possible member  */
+	pats[i] = malloc(sizeof(char) * lngst + NTS); 
+	/* allocation failure check */
+	if(pats[i] == NULL){
+		printf("Error during pattern import #4\n");
+		return NULL;
+	}
+	
+	while(tmpC != EOF){
 		
-		/* init for largest possible member  */
-		pats[i] = malloc(sizeof(char) * lngst + NTS); 
+		tmpC = fgetc(fp);
 		
-		/* fgets adds NULL at end of imported string */
-		fgets(pats[i], lngst + NTS, fp); 
-
-		/* get rid of newline */
-		int j = 0;	
-		for(j = 0; j < lngst+NTS; j++){
-			if((pats[i][j] == '\n') || (pats[i][j] == '\r')){
-			pats[i][j] = '\0';
+		if((tmpC == '\n') || (tmpC == '\r')){
+		
+			if((prevchar != '\n') && (prevchar != '\r')){
+				
+				i++;
+				
+				pats[i] = malloc(sizeof(char) * lngst + NTS); 
+				/* allocation failure check */
+				if(pats[i] == NULL){
+					printf("Error during pattern import #5\n");
+					return NULL;
+				}
+				
 			}
+			else{
+				/* consecutive newline, skip */
+			}
+
 		}
+		else{
+			
+			/* Strncat needs null terminated strings 
+			   malloc init's char* values as null*/
+			char *ptmpC = malloc(sizeof(char) * 2);
+			/* allocation failure check */
+			if(ptmpC == NULL){
+				printf("Error during pattern import #6\n");
+				return NULL;
+			}
+			
+			ptmpC[0] = tmpC;
+			strncat(pats[i], ptmpC, lngst + 2);
+			
+		}
+		
+		prevchar = tmpC;
 	}
 
-	pats[*nPats] = malloc(sizeof(char));
 	/* set last entry to null, functioning as collection terminator */
-	pats[*nPats] = "\0"; 
-
+	pats[*nPats] = malloc(sizeof(char));
+	/* allocation failure check */
+	if(pats[*nPats] == NULL){
+		printf("Error during pattern import #7\n");
+		return NULL;
+	}
+	
+	/* close the file, finished with it */
 	fclose(fp);
 
 	return pats;

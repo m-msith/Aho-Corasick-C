@@ -12,7 +12,7 @@
 #include "DefLib.h"
 
 /* Function used for importing patterns from file */
-char **IOinP(int *patNum);
+char **IOinP(int *patNum, char *fname);
 
 
 #endif

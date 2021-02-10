@@ -2,7 +2,8 @@
 *
 * This file is used to take care of building the AC Trie. The AC trie consists of three build steps: Building the 
 * Trie structure, building the Fail traces into the structure, and building the output structure into each node
-* of the Trie structure.
+* of the Trie structure. Output building is taken care of at the end of building the structure and at the end
+* of building the fail traces 
 *
 */
 
@@ -11,12 +12,17 @@
 
 /* 
 * Trie Build function
-* Returns: 1 if fail during building Trie structure, 2 if during building fail traces, 3 if during building output 
+* Returns: 1 if fail
 */
 char BuildACTrie(char **patts, Globals *g){
 
 	char retVal = 0;
 	int row = 0;
+  
+	#ifdef PRINT
+		printf("!!!!BUILDING TRIE!!!!\n\n");
+		printf("~~~Building Goto Structure + Output~~~\n\n");
+	#endif
   
 	/* add a patterns, char at a time, skip last null entry */
 	for(row = 0; row < (g->NumPats - 1); row++){ 
@@ -43,7 +49,6 @@ char BuildACTrie(char **patts, Globals *g){
 				if(g->Cur->cState == NULL){
 					
 					g->Cur->cState = malloc(sizeof(State));
-
 					/* failed allocation */
 					if(g->Cur->cState == NULL){
 						printf("ERROR Build #1\n");
@@ -63,7 +68,6 @@ char BuildACTrie(char **patts, Globals *g){
 					}
 
 					g->Cur->sState = malloc(sizeof(State));
-
 					/* failed allocation */
 					if(g->Cur->sState == NULL){
 						printf("ERROR BUILD #2\n");
@@ -95,7 +99,19 @@ char BuildACTrie(char **patts, Globals *g){
 
 		/* initialize output for state with output (last char in the pattern) */
 		g->Cur->ot = malloc(sizeof(Output));
+		/* failed allocation */
+		if(g->Cur->ot == NULL){
+			printf("ERROR BUILD #3\n");
+			return 1;
+		}
+		
 		g->Cur->ot_head = malloc(sizeof(Output));
+		/* failed allocation */
+		if(g->Cur->ot_head == NULL){
+			printf("ERROR BUILD #4\n");
+			return 1;
+		}
+		
 		g->Cur->ot_head = g->Cur->ot;
 
 		#ifdef PRINT
@@ -112,6 +128,12 @@ char BuildACTrie(char **patts, Globals *g){
 			#endif
 			
 			g->Cur->ot->nxt = malloc(sizeof(Output));
+			/* failed allocation */
+			if(g->Cur->ot->nxt == NULL){
+				printf("ERROR BUILD #5\n");
+				return 1;
+			}
+			
 			g->Cur->ot = g->Cur->ot->nxt;
 			
 			col++;
@@ -119,12 +141,12 @@ char BuildACTrie(char **patts, Globals *g){
 	
 		/* set to null to delimit, also good practice to have this for strings */
 		g->Cur->ot->c = '\0';
-
+		
+		/* set next to beeg null for easy processing*/
+		g->Cur->ot->nxt = NULL;
+		
 		#ifdef PRINT
 			printf(". First char %c, number of chars %d, for state '%c' @ %p\n", g->Cur->ot_head->c, col, g->Cur->stc, g->Cur);
-		#endif
-
-		#ifdef PRINT
 			printf("---inserted pattern num %d into the trie---\n", row);	
 		#endif
 		
@@ -137,13 +159,22 @@ char BuildACTrie(char **patts, Globals *g){
 	}
 
 	#ifdef PRINT
-		printf("\n~~~Goto Structure Build Completed~~~\n\n");
+		printf("\n~~~Goto Structure + Output Build Completed~~~\n");
 	#endif
 
 	/** Build Fail Traces **/
 
+	#ifdef PRINT
+		printf("\n~~~Building Failure Traces into Trie + Output~~~\n\n");
+	#endif
+
 	/* fifo queue used to traverse trie */
 	FifoSteQ *faQ = malloc(sizeof(FifoSteQ));
+	/* failed allocation */
+	if(faQ == NULL){
+		printf("ERROR BUILD #6\n");
+		return 1;
+	}
 
 	/* Set the initial failure state of level one states to the root states.
 	*  Add them to the failure addition queue to be considered as failure states 
@@ -159,7 +190,7 @@ char BuildACTrie(char **patts, Globals *g){
 	while(qAddSt->sState != NULL){
 		
 		#ifdef PRINT
-			printf("Failure Q: Added state %c to the queue\n", qAddSt->stc);
+			printf("Failure Q: Added state %c@%p to the queue\n", qAddSt->stc, qAddSt);
 		#endif
 
 		qAddSt = qAddSt->sState;
@@ -171,7 +202,7 @@ char BuildACTrie(char **patts, Globals *g){
 	}
 	
 	#ifdef PRINT
-		printf("Failure Q: Added state %c to the queue\n", qAddSt->stc);
+		printf("Failure Q: Added state %c@%p to the queue\n", qAddSt->stc, qAddSt);
 	#endif
  
 	/* process queued states until there are no more, signifying 
@@ -191,6 +222,9 @@ char BuildACTrie(char **patts, Globals *g){
 			*  this will get us through the entire queue
 			*  as we cycle until empty */
 			PushFifoSteQ(faQ, gtSt);
+			#ifdef PRINT
+				printf("Failure Q: Added state %c@%p to the queue\n", gtSt->stc, gtSt);
+			#endif
 
 			/* get and goto every failstate to see if it is a failstate
 			*  for the node being tested for failstates */
@@ -226,26 +260,51 @@ char BuildACTrie(char **patts, Globals *g){
 			/* Take care of Output, we add if the fail state has an output, and 
 			if it's not the root node */
 			if(gtSt->fState->ot_head != NULL){
-
-				if(gtSt->ot == NULL){
+				
+				/* if no output already here, add new output 
+				   otherwise, move to next position before adding*/
+				if(gtSt->ot_head == NULL){
 					
 					gtSt->ot = malloc(sizeof(Output));
+					/* failed allocation */
+					if(gtSt->ot == NULL){
+						printf("ERROR BUILD #7\n");
+						return 1;
+					}
+					
 					gtSt->ot_head = malloc(sizeof(Output));
+					/* failed allocation */
+					if(gtSt->ot_head == NULL){
+						printf("ERROR BUILD #8\n");
+						return 1;
+					}
+					
 					gtSt->ot_head = gtSt->ot;
 					
+				}
+				else{
+					
+					gtSt->ot->nxt = malloc(sizeof(Output));
+					/* failed allocation */
+					if(gtSt->ot->nxt == NULL){
+						printf("ERROR BUILD #9\n");
+						return 1;
+					}
+					
+					gtSt->ot = gtSt->ot->nxt;
 				}
 
 				Output *tmp = gtSt->fState->ot_head;
 
 				#ifdef PRINT
-					printf("appending output value: '%c'", gtSt->fState->ot_head->c);
+					printf("appending output values: ");
 				#endif
 
 				/* Add fail trace outputs if any */
-				while(tmp != NULL){
+				while(tmp->nxt != NULL){
 
 					#ifdef PRINT
-						printf("%c", tmp->c);
+						printf("'%c' ", tmp->c);
 					#endif
 
 					gtSt->ot->c = tmp->c;
@@ -253,12 +312,23 @@ char BuildACTrie(char **patts, Globals *g){
 					tmp = tmp->nxt;
 
 					gtSt->ot->nxt = malloc(sizeof(Output));
+					/* failed allocation */
+					if(gtSt->ot->nxt == NULL){
+						printf("ERROR BUILD #10\n");
+						return 1;
+					}
+		
 					gtSt->ot = gtSt->ot->nxt;
 
-				}
-
+				}				
+				
+				/* null terminate */
+				gtSt->ot->c = '\0';
+				/* set last to beeg null for easy looping */
+				gtSt->ot->nxt = NULL;
+				
 				#ifdef PRINT
-					printf("\n first output char: %c\n", gtSt->ot_head->c);
+					printf("\n first output char: '%c'\n", gtSt->ot_head->c);		
 				#endif
 			}
 
@@ -270,6 +340,11 @@ char BuildACTrie(char **patts, Globals *g){
 		}
 
 	} 
+	
+	#ifdef PRINT
+		printf("\n~~~Failure Traces + Output Built into the Trie~~~\n\n");
+		printf("!!!!TRIE BUILD FINISHED!!!!\n\n");
+	#endif
 
 	return retVal;
 

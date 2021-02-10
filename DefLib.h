@@ -12,11 +12,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define PRINT /* include print statements */
+#define TEST  /* run the tests! */
+
 #define NTS 1 /* null terminator size */
 
 #define TRUE 1
 #define FALSE 0
 
 #endif
+ 
