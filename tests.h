@@ -6,7 +6,15 @@
 */
 
 #include "DefLib.h"
+#include "AC.h"
+#define TOTAL_TESTS 3
 
-void testPatStore(char *pats[]);
+char testGlobalInit();
+
+char testPatStore(char *pats[]);
+
+char testTrieNovelBuild();
+
+char testTrieLongStringsBuild();
 
 #endif

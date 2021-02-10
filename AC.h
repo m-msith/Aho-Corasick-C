@@ -27,4 +27,6 @@ char ACgoto(Globals *g, char nxt);
 /* Function that returns the current State's fail state */
 State *GetFailState(State *st);
 
+unsigned int AC_Process(Globals *g, char *testString);
+
 #endif
