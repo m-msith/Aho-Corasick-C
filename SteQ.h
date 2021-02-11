@@ -14,12 +14,12 @@
 * SteQ is a simple linked list of states that is used for a fifo queue in order to build in the failure traces
 * into the AC pattern trie. 
 */
-typedef struct SteQ{
+struct SteQ{
 
-	State *stp;
+	struct State *stp;
 	struct SteQ *nxt;
 
-}SteQ;
+};
 
 /*
 * FifoSteQ is a one stop container to hold a first in first out queue of states.
@@ -29,35 +29,35 @@ typedef struct SteQ{
 * Pop a FifoSteQ by calling PopFifoSteQ()
 * 
 */
-typedef struct FifoSteQ{
+struct FifoSteQ{
 
-	SteQ *head;
-	SteQ *end;
+	struct SteQ *head;
+	struct SteQ *end;
 
-}FifoSteQ;
+};
 
 /*
 *Takes care of initializing a SteQ struct with a state and a Null pointer for its next element
 */
-void InitSteQ(SteQ *stq, State *s);
+void InitSteQ(struct SteQ *stq, struct State *s);
 
 
 /*
 *Takes care of initializing a FifoSteQ struct with a head and end SteQ's
 */
-void InitFifoSteQ(FifoSteQ *fq, State *s);
+char InitFifoSteQ(struct FifoSteQ *fq, struct State *s);
 
 /*
 *Add a state to a FifoSteQ (changes the end SteQ)
 */
-void PushFifoSteQ(FifoSteQ *fq, State *s);
+void PushFifoSteQ(struct FifoSteQ *fq, struct State *s);
 
 /*
 *Remove a state from the FifoSteQ (sets the head to the next member and removes the previous head)
 *
 *Returns the state that was removed from the fifo queue
 */
-State *PopFifoSteQ(FifoSteQ *fq);
+struct State *PopFifoSteQ(struct FifoSteQ *fq);
 
 
 #endif

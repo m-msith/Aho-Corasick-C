@@ -112,7 +112,7 @@ char **IOinP(int *patNum, char *fname){
 			}
 			
 			ptmpC[0] = tmpC;
-			strncat(pats[i], ptmpC, lngst + 2);
+			strncat(pats[i], ptmpC, lngst + NTS);
 			
 		}
 		

@@ -2,9 +2,9 @@
 #Coded by Martin Smith, Algorithm by Alfred Aho and Margaret Corasick 
 PROJ=ac
 
-SOURCES = AC.c Build.c IO.c SteQ.c State.c tests.c
-OBJECTS = AC.o Build.o IO.o SteQ.o State.o tests.o
-HEADERS = AC.h Build.h IO.h SteQ.h State.h tests.h Trie.h
+SOURCES = AC.c AC_Trie.c IO.c SteQ.c State.c tests.c
+OBJECTS = AC.o AC_Trie.o IO.o SteQ.o State.o tests.o
+HEADERS = AC.h AC_Trie.h IO.h SteQ.h State.h tests.h
 CC = gcc
 CFLAGS = -g -Wall
 

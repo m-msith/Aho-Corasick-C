@@ -11,7 +11,7 @@
 /*
 * Default initializaiton for a state queue
 */
-void InitSteQ(SteQ *stq, State *s){
+void InitSteQ(struct SteQ *stq, struct State *s){
 
 	stq->stp = s;
 	stq->nxt = NULL; 
@@ -21,22 +21,34 @@ void InitSteQ(SteQ *stq, State *s){
 /**
 * Default initialization for a first in first out state queue
 */
-void InitFifoSteQ(FifoSteQ *fq, State *s){
+char InitFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
-	fq->head = malloc(sizeof(SteQ));
-	fq->end = malloc(sizeof(SteQ));
+    char ret = TRUE;
+
+	fq->head = malloc(sizeof(struct SteQ));
+    /* Allocation check */
+    if(fq->head == NULL){
+        return FALSE;
+    }
+    
+	fq->end = malloc(sizeof(struct SteQ));
+    /* Allocation check */
+    if(fq->end == NULL){
+        return FALSE;
+    }
 
 	InitSteQ(fq->head, s);
 	fq->end = fq->head;
 
+    return ret;
 }
 
 /*
 * Add a member to a fifo state queue end
 */
-void PushFifoSteQ(FifoSteQ *fq, State *s){
+void PushFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
-	fq->end->nxt = malloc(sizeof(SteQ));
+	fq->end->nxt = malloc(sizeof(struct SteQ));
 
 	if(fq->end->nxt == NULL){
 		printf("FAILED MALLOC STATE QUEUE PUSH\n");
@@ -58,16 +70,16 @@ void PushFifoSteQ(FifoSteQ *fq, State *s){
 * Remove a member from the queue and return a pointer to the member that was removed
 * If the head is at NULL, there are no states in the queue, return NULL
 */
-State *PopFifoSteQ(FifoSteQ *fq){
+struct State *PopFifoSteQ(struct FifoSteQ *fq){
 
-	State *retSt;
+	struct State *retSt;
 
 	if(fq->head != NULL){
 
 		retSt = fq->head->stp;
 
 		/* change head position to the next state */
-		SteQ* rem = fq->head;
+		struct SteQ* rem = fq->head;
 		fq->head = fq->head->nxt;
 
 		/* don't kill the state in the process of removal/freeing of the head queue member */

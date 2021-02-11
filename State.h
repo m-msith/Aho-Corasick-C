@@ -12,19 +12,19 @@
 #include "DefLib.h"
 
 /**
-* The Output structure is a linked list of characters, using null as deliminating char with double null signaling end
+* The Output structure is a linked list of characters, using null as deliminating char
 */
-typedef struct Output{
+struct Output{
 
 	char c;
 	struct Output *nxt;
 
-}Output;
+};
 
 /**
 * State the structure for a given point in the AC !state! trie. 
 */
-typedef struct State{
+struct State{
 
 	char stc; /* At the simplest level, a state is just a character */
 	int id;
@@ -39,11 +39,11 @@ typedef struct State{
 	/* include ref to head for reset */
 	struct Output *ot_head;
 
-}State;
+};
 
 /*
 * Init a default state with ID, character, and null pointer values
 */
-void DefaultStateInit(char c, int id, State *st);
+void DefaultStateInit(char c, int id, struct State *st);
 
 #endif
