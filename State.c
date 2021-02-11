@@ -9,7 +9,7 @@
 /*
 * Init a default state value (this should go in state)
 */
-void DefaultStateInit(char c, int id, State *st){
+void DefaultStateInit(char c, int id, struct State *st){
 
 	st->stc = c; 
 	st->id = id;

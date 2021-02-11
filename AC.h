@@ -9,24 +9,14 @@
 * Used by AC.c
 */
 
-#include "State.h"
-#include "Trie.h"
 #include "IO.h"
 #include "tests.h"
-#include "Build.h"
+#include "AC_Trie.h"
 
 /* Method used for initalizing the values of the the globals structure */
-Globals* InitGlobals();
+struct Globals *InitGlobals();
 
 /* Method use for the cleanup of the globals structure */
-void CleanGlobals(Globals *g);
-
-/* Function that allows for moving along the Trie structure */
-char ACgoto(Globals *g, char nxt);
-
-/* Function that returns the current State's fail state */
-State *GetFailState(State *st);
-
-unsigned int AC_Process(Globals *g, char *testString);
+void CleanGlobals(struct Globals *g);
 
 #endif

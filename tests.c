@@ -11,7 +11,7 @@ char testGlobalInit(){
 	
 	char pf = TRUE;
 	
-	Globals *tg = InitGlobals();
+	struct Globals *tg = InitGlobals();
 	if(tg == NULL){
 		printf("ERROR testGlobalInit: global allocation failure\n");
 		return FALSE;
@@ -102,13 +102,13 @@ char testTrieNovelBuild(){
 	
 	char pf = TRUE;
 	
-	Globals *tg = InitGlobals();
+	struct Globals *tg = InitGlobals();
 	if(tg == NULL){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Global init\n");
 	}
 	
-	tg->NumPats = 5;
+	tg->NumPats = 6;
 	
 	char patts[5][5] = 
 	{
@@ -117,7 +117,7 @@ char testTrieNovelBuild(){
 		{'f', 'a', 'd', 'e', '\0'},
 		{'d', 'e', '\0', '\0', '\0'},
 		{'a', 'b', 'd', 'e', '\0'},
-		{'\0', '\0', '\0', '\0', '\0'}
+		{'a', 'b', '\0', '\0', '\0'}
 		
 	};	
 	
@@ -130,7 +130,7 @@ char testTrieNovelBuild(){
 	}
 	
 	int i, j;
-	for(i = 0; i < 5; i++){
+	for(i = 0; i < 6; i++){
 		
 		pattz[i] = malloc(sizeof(char) * 5);
 		/* allocation check */
@@ -143,13 +143,15 @@ char testTrieNovelBuild(){
 			pattz[i][j] = patts[i][j];
 		}
 	}
-	
+    
+	/* build the AC trie with previous defined input */
 	char badRetBuild = BuildACTrie(pattz, tg);
 	if(badRetBuild == TRUE){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Trie Build Failed!\n");
 	}
 	
+    /* string to search through */
 	char *testString = "abcd fade de abde abdede xxxx fadx abcefa abcde";
 	
 	printf("patterns for matching:\n\n");
@@ -157,15 +159,17 @@ char testTrieNovelBuild(){
 	printf("%s\n",pattz[1]);
 	printf("%s\n",pattz[2]);
 	printf("%s\n",pattz[3]);
+    printf("%s\n",pattz[4]);
 	
 	printf("\nTest Input: %s\n\n", testString);
-	printf("Patterns found in test input, in order (should be 11):\n\n");
+	printf("Patterns found in test input, in order (should be 16):\n\n");
 	
+    /* Use the defined trie and input to test found outputs */
 	unsigned int pattsFound = AC_Process(tg, testString);
 	
 	printf("\npattsFound: %d\n", pattsFound);
 	
-	if(pattsFound != 11){
+	if(pattsFound != 16){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Wrong number of patterns found!\n");
 	}
@@ -173,7 +177,7 @@ char testTrieNovelBuild(){
 	CleanGlobals(tg);
 	
 	if(pf == TRUE){
-		printf("Test passed, no issues!\n");		
+		printf("\nTest passed, no issues!\n");		
 	}
 	
 	return pf;
