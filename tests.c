@@ -183,26 +183,249 @@ char testTrieNovelBuild(){
 	return pf;
 }
 
-char testTrieLongStringsBuild(){
-	/* 
-	Globals *tg = InitGlobals();
-	if(g == NULL){
-		printf("ERROR Init #1\n");
-		return 1;
+char testTrieStructure(){
+	
+	char pf = TRUE;
+	
+	struct Globals *tg = InitGlobals();
+	if(tg == NULL){
+		pf = FALSE;
+		printf("ERROR testTrieStructure: Global init\n");
 	}
 	
-	tg->NumPats = patNum;
+	tg->NumPats = 6;
 	
-	patts[][]{
+	char patts[5][5] = 
+	{
 		
+		{'a', 'd', 'c', 'd', '\0'},
+		{'f', 'a', 'd', 'e', '\0'},
+		{'d', 'e', '\0', '\0', '\0'},
+		{'a', 'b', 'd', 'e', '\0'},
+		{'a', 'b', 'a', 'b', '\0'}
 		
-	};
+	};	
 	
-	char badRetBuild = BuildACTrie(patts, tg);
+	char **pattz;
+	pattz = malloc(sizeof(char *) * 5);
+	/* allocation check */
+	if(pattz == NULL){
+		printf("ERROR testTrieStructure: malloc failure 1\n");
+		return FALSE;
+	}
+	
+	int i, j;
+	for(i = 0; i < 6; i++){
+		
+		pattz[i] = malloc(sizeof(char) * 5);
+		/* allocation check */
+		if(pattz[i] == NULL){
+			printf("ERROR testTrieStructure: malloc failure 2\n");
+			return FALSE;
+		}
+		
+		for(j = 0; j < 5; j++){
+			pattz[i][j] = patts[i][j];
+		}
+	}
+    
+	/* build the AC trie with previous defined input */
+	char badRetBuild = BuildACTrie(pattz, tg);
 	if(badRetBuild == TRUE){
-		printf("ERROR Init #3\n");
-		return 1;
+		pf = FALSE;
+		printf("ERROR testTrieStructure: Trie Build Failed!\n");
 	}
-	 */
-	return FALSE;
+	
+	
+	
+	/* Traverse the trie and store in array for easy compares */
+	struct FifoSteQ *travQ = malloc(sizeof(struct FifoSteQ));	
+	char inittest = InitFifoSteQ(travQ, tg->Root);
+	if(inittest != TRUE){
+		
+	}	
+	
+	struct State *SteArr[16];	
+	i = 0;
+	
+	while(travQ->head != NULL){
+		
+		struct State *popSt = PopFifoSteQ(travQ);		
+		
+		while(popSt->cState != NULL){
+			
+			SteArr[i] = popSt;
+			i++;
+			
+			popSt = popSt->cState;
+			
+			struct State *strav = popSt;
+			
+			while(strav->sState != NULL){
+				
+				strav = strav->sState;
+				
+				PushFifoSteQ(travQ, strav);
+				
+			}
+			
+		}
+		
+		SteArr[i] = popSt;
+		i++;
+		
+	}
+	
+	/* 
+		{'a', 'd', 'c', 'd', '\0'},
+		{'f', 'a', 'd', 'e', '\0'},
+		{'d', 'e', '\0', '\0', '\0'},
+		{'a', 'b', 'd', 'e', '\0'},
+		{'a', 'b', 'a', 'b', '\0'}
+	
+	trie:
+	
+'\0'-a01 -d02 -c03 -d04
+ 	  |	   |
+	  |	  b05 -d06 -e07
+	  |	        |
+ 	  |	       a08 -b09
+ 	 f10 -a11 -d12 -e13 	
+	  |
+	 d14 -e15
+	
+	array:
+	
+	0    1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
+	'\0' a01 d02 c03 d04 f10 a11 d12 e13 d14 e15 b05 d06 e07 a08 b09
+	
+	*/
+	
+	/* check that the fail traces are in-tact and correct */
+	if(SteArr[0]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[1]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[2]->fState != SteArr[9]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[3]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[4]->fState != SteArr[9]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[5]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[6]->fState != SteArr[1]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[7]->fState != SteArr[2]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[8]->fState != SteArr[10]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[9]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[10]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[11]->fState != SteArr[0]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[12]->fState != SteArr[9]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[13]->fState != SteArr[10]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[14]->fState != SteArr[1]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[15]->fState != SteArr[11]){
+		pf = FALSE;
+	}
+	
+	
+	/* check that sibling strings are in-tact and correct*/
+	//a->fd
+	if(SteArr[1]->sState != SteArr[5]){
+		pf = FALSE;
+	}
+	
+	if(SteArr[5]->sState != SteArr[9]){
+		pf = FALSE;
+	}
+	
+	//d->b
+	if(SteArr[2]->sState != SteArr[11]){
+		pf = FALSE;
+	}
+	
+	//d->a
+	if(SteArr[12]->sState != SteArr[14]){
+		pf = FALSE;
+	}
+
+	
+	/* check that child strings are in-tact and correct*/
+	
+	//a->dcd
+	for(i = 0; i < 4; i++){
+		if(SteArr[i]->cState != SteArr[i+1]){			
+			pf = FALSE;
+		}
+	}
+	
+	//f->ade
+	for(i = 5; i < 8; i++){
+		if(SteArr[i]->cState != SteArr[i+1]){
+			pf = FALSE;
+		}
+	}
+	
+	//b->de
+	for(i = 9; i < 10; i++){
+		if(SteArr[i]->cState != SteArr[i+1]){
+			pf = FALSE;
+		}
+	}
+	
+	//d->be
+	for(i = 11; i < 13; i++){
+		if(SteArr[i]->cState != SteArr[i+1]){
+			pf = FALSE;
+		}
+	}
+	
+	//d->e
+	for(i = 14; i < 15; i++){
+		if(SteArr[i]->cState != SteArr[i+1]){
+			pf = FALSE;
+		}
+	}
+	
+	
+	
+	return pf;
 }

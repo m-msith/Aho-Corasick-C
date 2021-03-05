@@ -43,6 +43,10 @@ int main(){
 		testsPassed += testTrieNovelBuild();
 		printf("\n	~~~END testing novel trie build~~~\n\n");
 		
+		printf("\n	~~~START testing novel trie structure pointer analysis~~~\n\n");
+		testsPassed += testTrieStructure();
+		printf("\n	~~~END testing novel trie structure pointer analysis~~~\n\n");
+		
 		printf("END ALL TESTS\n");
 		printf("%d tests passed out of %d\n", testsPassed, TOTAL_TESTS);
 		
