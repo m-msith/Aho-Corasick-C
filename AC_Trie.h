@@ -27,6 +27,12 @@ struct Globals{
 /* Function that builds an AC pattern trie */
 char BuildACTrie(char **patts, struct Globals *g);
 
+/* take care of building the root data structure and initial outputs*/
+char BuildACTrieStructure(char **patts, struct Globals *g);
+
+/* take care of adding failure traces as well as tying up output*/
+char BuildACTrieFailTraces(struct Globals *g);
+
 /* Function that allows for moving along the Trie structure */
 char ACgoto(struct Globals *g, char nxt);
 

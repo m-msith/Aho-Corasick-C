@@ -556,5 +556,9 @@ char testTrieStructure(){
 		}
 	}
 		
+    if(pf == TRUE){
+        printf("Test passed, no issues!\n");		
+	}
+        
 	return pf;
 }

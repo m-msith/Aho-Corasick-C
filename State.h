@@ -46,4 +46,12 @@ struct State{
 */
 void DefaultStateInit(char c, int id, struct State *st);
 
+/* 
+* Add a new Output structure to a given one without messing with the 
+* given one.
+*/
+char AppendOutput(char c, struct Output **o);
+
+char CatOutput(struct Output *from, struct Output **to);
+
 #endif
