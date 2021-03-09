@@ -59,7 +59,8 @@ char AppendOutput(char c, struct Output **o){
     
 }
 
-/* Append an Output to a given Output structure (by copy, 
+/* 
+*  Append an Output to a given Output structure (by copy, 
 *  could do by reference too, maybe mess with that later)
 */
 char CatOutput(struct Output *from, struct Output **to){
@@ -93,7 +94,6 @@ char CatOutput(struct Output *from, struct Output **to){
     
     /* Add the from output to the to output */
     while(fout->nxt != NULL){  
-        
         tout->c = fout->c;
         
         tout->nxt = malloc(sizeof(struct Output));
@@ -104,7 +104,9 @@ char CatOutput(struct Output *from, struct Output **to){
         tout = tout->nxt;
         fout = fout->nxt;
     }
-        
+    
+    /* last to null to terminate*/
+    tout->c = '\0';
     tout->nxt = NULL;
     
     return retVal;

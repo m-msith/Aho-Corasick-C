@@ -364,11 +364,10 @@ unsigned int AC_Process(struct Globals *g, char *searchString){
 		/* If we arrived at a state with an output, print it for now 
 		   and keep track of the number of findings */
 		if(g->Cur->ot_head != NULL){
-			
 			struct Output *tmp = g->Cur->ot_head;
-			
+            
 			while(tmp != NULL){
-				
+                
 				if(tmp->c == '\0'){
 					pattFound++;
 					
@@ -376,7 +375,7 @@ unsigned int AC_Process(struct Globals *g, char *searchString){
 					
 				}
 				
-				printf("%c", tmp->c);
+                printf("%c", tmp->c);
 				tmp = tmp->nxt;
 				
 			}
