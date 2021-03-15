@@ -56,7 +56,8 @@ char **IOinP(int *patNum, char *fname){
 		return NULL;
 	} 
 
-	pats = malloc(sizeof(char*) * (*nPats));
+	/* account for zero indexing */
+	pats = malloc(sizeof(char*) * (*nPats + 1));
 	/* allocation failure check */
 	if(pats == NULL){
 		printf("Error during pattern import #3\n");
@@ -74,6 +75,8 @@ char **IOinP(int *patNum, char *fname){
 		printf("Error during pattern import #4\n");
 		return NULL;
 	}
+	/* empty string */
+	*pats[i] = '\0';
 	
 	while(tmpC != EOF){
 		
@@ -91,6 +94,8 @@ char **IOinP(int *patNum, char *fname){
 					printf("Error during pattern import #5\n");
 					return NULL;
 				}
+				/* empty string */
+				*pats[i] = '\0';
 				
 			}
 			else{
@@ -100,8 +105,7 @@ char **IOinP(int *patNum, char *fname){
 		}
 		else{
 			
-			/* Strncat needs null terminated strings 
-			   malloc init's char* values as null*/
+			/* Strncat needs null terminated strings */
 			char *ptmpC = malloc(sizeof(char) * 2);
 			/* allocation failure check */
 			if(ptmpC == NULL){
@@ -110,6 +114,7 @@ char **IOinP(int *patNum, char *fname){
 			}
 			
 			ptmpC[0] = tmpC;
+			ptmpC[1] = '\0';
 			strncat(pats[i], ptmpC, lngst + NTS);
 			
 		}
