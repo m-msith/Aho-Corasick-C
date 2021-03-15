@@ -42,6 +42,7 @@ struct State *GetFailState(struct State *st);
 /* Function that processes an input with a particular AC pattern trie */
 unsigned int AC_Process(struct Globals *g, char *testString);
 
-
+/* Function that cleans a global structure, including the ACTrie */
+char FreeACTrie(struct Globals *g);
 
 #endif

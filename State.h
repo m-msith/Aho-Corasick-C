@@ -34,9 +34,7 @@ struct State{
 	struct State *sState;
 	struct State *fState;
 
-	/* Output is variable, uses a linked list of characters */
-	struct Output *ot;
-	/* include ref to head for reset */
+	/* output is variable in size, uses a linked list of characters */\
 	struct Output *ot_head;
 
 };
@@ -47,11 +45,18 @@ struct State{
 void DefaultStateInit(char c, int id, struct State *st);
 
 /* 
-* Add a new Output structure to a given one without messing with the 
-* given one.
+* Add a new Output structure to a given Output linked list 
 */
 char AppendOutput(char c, struct Output **o);
 
+/*
+* Concatanate two Output structure linked lists
+*/
 char CatOutput(struct Output *from, struct Output **to);
+
+/*
+* Clean up an Output structure linked list 
+*/
+char FreeOutput(struct Output *o);
 
 #endif

@@ -279,6 +279,10 @@ char BuildACTrieFailTraces(struct Globals *g){
 
 	} 
 	
+	/* free queue memory */
+	free(faQ);
+	faQ = NULL;
+	
 	#ifdef PRINT
 		printf("\n~~~Failure Traces + Output Built into the Trie~~~\n\n");
 		printf("!!!!TRIE BUILD FINISHED!!!!\n\n");
@@ -339,6 +343,10 @@ struct State *GetFailState(struct State *st){
 	return st->fState;
 }
 
+/*
+* Search a given string with a given ACTrie for all patterns 
+* in the ACTrie.
+*/
 unsigned int AC_Process(struct Globals *g, char *searchString){
 
 	unsigned long index = 0;
@@ -391,3 +399,71 @@ unsigned int AC_Process(struct Globals *g, char *searchString){
 	return pattFound;
 }	
 
+/*
+* Free a given AC trie structure by searching through the 
+* trie and removing depth first (child strings)
+*/
+char FreeACTrie(struct Globals *g){
+	
+	#ifdef PRINT
+		printf("freeing AC trie\n");
+	#endif
+	
+	char pf = TRUE;
+	
+	/* Traverse the trie and free the states on pop */
+	struct FifoSteQ *travQ = malloc(sizeof(struct FifoSteQ));	
+	char inittest = InitFifoSteQ(travQ, g->Root);
+	if(inittest != TRUE){
+		pf = FALSE;
+	}
+	
+	while(travQ->head != NULL){
+		
+		struct State *killCSt;
+		struct State *popSt = PopFifoSteQ(travQ);
+		
+		while(popSt->cState != NULL){
+			
+			killCSt = popSt;
+			
+			#ifdef PRINT
+				printf("killing '%c'\n", killCSt->stc);
+			#endif
+			
+			popSt = popSt->cState;			
+			
+			struct State *strav = popSt;
+			while(strav->sState != NULL){
+				
+				strav = strav->sState;
+				
+				PushFifoSteQ(travQ, strav);
+			}
+			
+			
+			pf += FreeOutput(killCSt->ot_head);
+			free(killCSt);
+			killCSt = NULL;
+			
+		}	
+		
+		
+		killCSt = popSt;
+		
+		#ifdef PRINT
+			printf("killing '%c'\n", killCSt->stc);
+		#endif
+		
+		pf += FreeOutput(killCSt->ot_head);
+		free(killCSt);
+		killCSt = NULL;
+		
+	}
+	
+	free(travQ);
+	travQ = NULL;
+	
+	
+	return pf;
+}

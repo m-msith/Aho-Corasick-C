@@ -52,12 +52,14 @@ int main(){
 		
 	#else
 	
-		struct Globals *g = InitGlobals();
+		struct Globals *g = malloc(sizeof(struct Globals));		
+		struct State *r = malloc(sizeof(struct State));
 		if(g == NULL){
 			printf("ERROR Init #2\n");
 			return 1;
 		}
-
+		InitGlobals(&g, &r);
+		
 		#ifdef PRINT
 			printf("~~~Global Init Pass~~~\n");
 		#endif
@@ -84,53 +86,51 @@ int main(){
 	return 0;
 }
 
-
-
 /**
 *Take care of initializing the globals data structure to be used by the entire program
 */
-struct Globals *InitGlobals(){
-
-	struct Globals *g = malloc(sizeof(struct Globals));
-	if(g == NULL){
-		return NULL;
-	}
+void InitGlobals(struct Globals *g){	
 
 	g->Root = malloc(sizeof(struct State));
-	if(g->Root == NULL){
-		return NULL;
-	}
 
 	/* init root */
 	DefaultStateInit('\0', 0, g->Root);
 
 	/* root node is null and fails to itself */
 	g->Root->fState = g->Root;
-
 	g->Cur = g->Root;
-	if(g->Cur == NULL){
-		return NULL;
-	}
 
 	g->IDCount = 0;
 
-	return g;
 }
 
 /**
 *Clean up an instance of the globals data type
 */
-void CleanGlobals(struct Globals *g){
+char CleanGlobals(struct Globals *g){
+
+	char pf;
+
+	#ifdef PRINT
+		printf("freeing global/ACTrie\n");
+	#endif
 
 	if(g != NULL){
 		
-		free(g->Root);
-		
-		if(g->Root != g->Cur){
-			free(g->Cur);
+		printf("global '%p'\n", g);
+		pf = FreeACTrie(g);		
+		printf("global '%p'\n", g);
+		if(g != NULL){
+			free(g);		
 		}
 		
-		free(g);
+		
+		g = NULL;
 	}
+	
+	#ifdef PRINT
+		printf("end freeing global/ACTrie\n\n");
+	#endif
 
+	return pf;
 }

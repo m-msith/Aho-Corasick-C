@@ -16,7 +16,6 @@ void DefaultStateInit(char c, int id, struct State *st){
 	st->cState = NULL;
 	st->sState = NULL;
 	st->fState = NULL;
-	st->ot = NULL;
 	st->ot_head = NULL;
 	
 }
@@ -32,6 +31,9 @@ char AppendOutput(char c, struct Output **o){
     if(*o == NULL){
        
         *o = malloc(sizeof(struct Output));
+		if(o == NULL){
+			retVal = FALSE;
+		}
         tout = *o;
         
     }else{
@@ -75,6 +77,9 @@ char CatOutput(struct Output *from, struct Output **to){
     /* take care of a needing a new structure at first */
     if(*to == NULL){
         *to = malloc(sizeof(struct Output)); 
+		if(*to == NULL){
+			retVal = FALSE;
+		}
         tout = *to;        
     }
     /* otherwise cycle to the end of the to linked list */
@@ -113,3 +118,31 @@ char CatOutput(struct Output *from, struct Output **to){
     
 }
 
+/* 
+* Function to free an output linked list
+**/
+char FreeOutput(struct Output *o){
+	
+	#ifdef PRINT
+		printf("	Starting Freeing Output\n");
+	#endif
+	
+	while(o != NULL){
+		struct Output *killO = o;
+		
+		#ifdef PRINT
+			printf("	killo '%c'\n", killO->c);
+		#endif
+		
+		o = o->nxt;
+		free(killO);
+		killO = NULL;
+	}
+	
+	#ifdef PRINT
+		printf("	Done Freeing Output\n");
+	#endif
+	
+	return FALSE;
+	
+}
