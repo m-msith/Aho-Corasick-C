@@ -11,11 +11,13 @@ char testGlobalInit(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = InitGlobals();
+	struct Globals *tg = malloc(sizeof(struct Globals));	
 	if(tg == NULL){
 		printf("ERROR testGlobalInit: global allocation failure\n");
 		return FALSE;
 	}
+	InitGlobals(tg);
+	
 	
 	if(tg->Root != tg->Cur){
 		pf = FALSE;
@@ -32,11 +34,6 @@ char testGlobalInit(){
 		printf("ERROR testGlobalInit: root character not null\n");
 	}
 	
-	if(tg->Root->ot != NULL){
-		pf = FALSE;
-		printf("ERROR testGlobalInit: root output not null\n");
-	}
-	
 	if(tg->Root->ot_head != NULL){
 		pf = FALSE;
 		printf("ERROR testGlobalInit: root output head not null\n");
@@ -50,6 +47,8 @@ char testGlobalInit(){
 	if(pf == TRUE){
 		printf("Test passed, no issues!\n");		
 	}
+	
+	CleanGlobals(tg);
 	
 	return pf;
 }
@@ -102,11 +101,12 @@ char testTrieNovelBuild(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = InitGlobals();
+	struct Globals *tg = malloc(sizeof(struct Globals));
 	if(tg == NULL){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Global init\n");
 	}
+	InitGlobals(tg);
 	
 	tg->NumPats = 6;
 	
@@ -167,14 +167,16 @@ char testTrieNovelBuild(){
     /* Use the defined trie and input to test found outputs */
 	unsigned int pattsFound = AC_Process(tg, testString);
 	
-	printf("\npattsFound: %d\n", pattsFound);
+	printf("\npattsFound: %d\n\n", pattsFound);
 	
 	if(pattsFound != 16){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Wrong number of patterns found!\n");
 	}
 	
-	CleanGlobals(tg);
+	pf = CleanGlobals(tg);
+	free(pattz);
+	pattz = NULL;
 	
 	if(pf == TRUE){
 		printf("\nTest passed, no issues!\n");		
@@ -187,11 +189,12 @@ char testTrieStructure(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = InitGlobals();
+	struct Globals *tg = malloc(sizeof(struct Globals));
 	if(tg == NULL){
 		pf = FALSE;
 		printf("ERROR testTrieStructure: Global init\n");
 	}
+	InitGlobals(tg);
 	
 	tg->NumPats = 6;
 	
@@ -215,7 +218,7 @@ char testTrieStructure(){
 	}
 	
 	int i, j;
-	for(i = 0; i < 6; i++){
+	for(i = 0; i < 5; i++){
 		
 		pattz[i] = malloc(sizeof(char) * 5);
 		/* allocation check */
@@ -303,12 +306,13 @@ char testTrieStructure(){
 	
 	*/
     
-    /* Check that the output strings are well formed as expected
-    this clobbers ot->head, but that's okay for now as it's a test, 
-    on rework to get rid of the second output struct, will be easier */
+    /* Check that the output strings are well formed as expected */
     
+	struct Output *hold;
+	
     i = 0;
     char tmp[] = {'a', 'd', 'c', 'd', '\0'};
+	hold = SteArr[4]->ot_head;
     while(SteArr[4]->ot_head->nxt != NULL){
         if(SteArr[4]->ot_head->c != tmp[i]){
            pf = FALSE; 
@@ -317,9 +321,11 @@ char testTrieStructure(){
         i++;
         SteArr[4]->ot_head = SteArr[4]->ot_head->nxt;
     }
+	SteArr[4]->ot_head = hold;
     
     i = 0;
     char tmp2[] = {'f', 'a', 'd', 'e', '\0', 'd', 'e', '\0'};
+	hold = SteArr[8]->ot_head;
     while(SteArr[8]->ot_head->nxt != NULL){
         if(SteArr[8]->ot_head->c != tmp2[i]){
            pf = FALSE; 
@@ -328,9 +334,11 @@ char testTrieStructure(){
         i++;
         SteArr[8]->ot_head = SteArr[8]->ot_head->nxt;
     }
+	SteArr[8]->ot_head = hold;
     
     i = 0;
     char tmp3[] = {'d', 'e', '\0'};
+	hold = SteArr[10]->ot_head;
     while(SteArr[10]->ot_head->nxt != NULL){
         if(SteArr[10]->ot_head->c != tmp3[i]){
            pf = FALSE; 
@@ -339,9 +347,11 @@ char testTrieStructure(){
         i++;
         SteArr[10]->ot_head = SteArr[10]->ot_head->nxt;
     }
+	SteArr[10]->ot_head = hold;
     
     i = 0;
     char tmp4[] = {'a', 'b', 'd', 'e', '\0', 'd', 'e', '\0'};
+	hold = SteArr[13]->ot_head;
     while(SteArr[13]->ot_head->nxt != NULL){
         if(SteArr[13]->ot_head->c != tmp4[i]){
            pf = FALSE; 
@@ -350,9 +360,11 @@ char testTrieStructure(){
         i++;
         SteArr[13]->ot_head = SteArr[13]->ot_head->nxt;
     }
+	SteArr[13]->ot_head = hold;
     
     i = 0;
     char tmp5[] = {'a', 'b', 'a', 'b', '\0'};
+	hold = SteArr[15]->ot_head;
     while(SteArr[15]->ot_head->nxt != NULL){
         if(SteArr[15]->ot_head->c != tmp5[i]){
            pf = FALSE; 
@@ -361,6 +373,7 @@ char testTrieStructure(){
         i++;
         SteArr[15]->ot_head = SteArr[15]->ot_head->nxt;
     }
+	SteArr[15]->ot_head = hold;
     
     i = 0;
     
@@ -556,9 +569,15 @@ char testTrieStructure(){
 		}
 	}
 		
+	pf = CleanGlobals(tg);
+	free(pattz);
+	pattz = NULL;
+	
     if(pf == TRUE){
         printf("Test passed, no issues!\n");		
 	}
         
+	
+		
 	return pf;
 }

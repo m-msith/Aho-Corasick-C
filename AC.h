@@ -14,9 +14,9 @@
 #include "AC_Trie.h"
 
 /* Method used for initalizing the values of the the globals structure */
-struct Globals *InitGlobals();
+void InitGlobals(struct Globals *g);
 
 /* Method use for the cleanup of the globals structure */
-void CleanGlobals(struct Globals *g);
+char CleanGlobals(struct Globals *g);
 
 #endif
