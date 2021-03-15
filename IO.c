@@ -15,7 +15,7 @@
 */
 char **IOinP(int *patNum, char *fname){
 
-	char tmpC;
+	char tmpC = '\0';
 	int  lngst = 0, tmpLen = 0;
 
 	char **pats;
@@ -56,9 +56,6 @@ char **IOinP(int *patNum, char *fname){
 		return NULL;
 	} 
 
-	/* plus one for null ref string */
-	*nPats = *nPats + 1; 
-
 	pats = malloc(sizeof(char*) * (*nPats));
 	/* allocation failure check */
 	if(pats == NULL){
@@ -68,6 +65,7 @@ char **IOinP(int *patNum, char *fname){
 	
 	unsigned long i = 0;
 	tmpC = '\0';
+	prevchar = '\0';
 	
 	/* init for largest possible member  */
 	pats[i] = malloc(sizeof(char) * lngst + NTS); 
@@ -117,14 +115,6 @@ char **IOinP(int *patNum, char *fname){
 		}
 		
 		prevchar = tmpC;
-	}
-
-	/* set last entry to null, functioning as collection terminator */
-	pats[*nPats] = malloc(sizeof(char));
-	/* allocation failure check */
-	if(pats[*nPats] == NULL){
-		printf("Error during pattern import #7\n");
-		return NULL;
 	}
 	
 	/* close the file, finished with it */

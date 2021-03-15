@@ -42,8 +42,8 @@ char BuildACTrieStructure(char **patts, struct Globals *g){
 		printf("~~~Building Goto Structure + Output~~~\n\n");
 	#endif
   
-	/* add a patterns, char at a time, skip last null entry */
-	for(row = 0; row < (g->NumPats - 1); row++){ 
+	/* add a patterns, char at a time */
+	for(row = 0; row < g->NumPats; row++){ 
 
 		/* reset counting var */
 		int col = 0;
@@ -210,7 +210,7 @@ char BuildACTrieFailTraces(struct Globals *g){
  
 	/* process queued states until there are no more, signifying 
 	*  that we got through the whole trie */
-	while(faQ->head != NULL){
+	while(faQ->head->stp != NULL){
 		
 		struct State *popSt = PopFifoSteQ(faQ);	
 
@@ -413,12 +413,14 @@ char FreeACTrie(struct Globals *g){
 	
 	/* Traverse the trie and free the states on pop */
 	struct FifoSteQ *travQ = malloc(sizeof(struct FifoSteQ));	
+	
+	
 	char inittest = InitFifoSteQ(travQ, g->Root);
 	if(inittest != TRUE){
 		pf = FALSE;
 	}
 	
-	while(travQ->head != NULL){
+	while(travQ->head->stp != NULL){
 		
 		struct State *killCSt;
 		struct State *popSt = PopFifoSteQ(travQ);
@@ -458,7 +460,6 @@ char FreeACTrie(struct Globals *g){
 		pf += FreeOutput(killCSt->ot_head);
 		free(killCSt);
 		killCSt = NULL;
-		
 	}
 	
 	free(travQ);
