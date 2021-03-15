@@ -174,9 +174,7 @@ char testTrieNovelBuild(){
 		printf("ERROR testTrieNovelBuild: Wrong number of patterns found!\n");
 	}
 	
-	pf = CleanGlobals(tg);
-	free(pattz);
-	pattz = NULL;
+	CleanGlobals(tg);
 	
 	if(pf == TRUE){
 		printf("\nTest passed, no issues!\n");		
@@ -253,7 +251,7 @@ char testTrieStructure(){
 	struct State *SteArr[16];	
 	i = 0;
 	
-	while(travQ->head != NULL){
+	while(travQ->head->stp != NULL){
 		
 		struct State *popSt = PopFifoSteQ(travQ);		
 		
@@ -568,16 +566,12 @@ char testTrieStructure(){
             printf("ERROR testTrieStructure: child 5: i->%d\n", i);
 		}
 	}
-		
-	pf = CleanGlobals(tg);
-	free(pattz);
-	pattz = NULL;
+	
+	CleanGlobals(tg);
 	
     if(pf == TRUE){
         printf("Test passed, no issues!\n");		
 	}
-        
 	
-		
 	return pf;
 }

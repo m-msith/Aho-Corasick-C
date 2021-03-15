@@ -38,32 +38,30 @@ char InitFifoSteQ(struct FifoSteQ *fq, struct State *s){
     }
 
 	InitSteQ(fq->head, s);
-	fq->end = fq->head;
+	InitSteQ(fq->end, NULL);
+	fq->head->nxt = fq->end;
 
     return ret;
 }
 
 /*
-* Add a member to a fifo state queue end
+* Add a member to a fifo state queue end, or init if empty 
 */
 void PushFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
-	fq->end->nxt = malloc(sizeof(struct SteQ));
-
-	if(fq->end->nxt == NULL){
-		printf("FAILED MALLOC STATE QUEUE PUSH\n");
+	if(fq->end->stp == NULL){	
+	
+		fq->end->stp = s;
+		fq->end->nxt = malloc(sizeof(struct SteQ));
+		if(fq->end->nxt == NULL){
+			printf("FAILED MALLOC STATE QUEUE PUSH\n");
+		}
+		
+		fq->end = fq->end->nxt;
+		fq->end->stp = NULL;
+		
 	}
 
-	fq->end = fq->end->nxt;
-
-	InitSteQ(fq->end, s);
-
-	//todo
-	/* band-aid for the moment, may be the right fix though, need to investigate */
-	if(fq->head == NULL){
-		fq->head = fq->end;
-	}
-  
 }
 
 /*
@@ -77,15 +75,17 @@ struct State *PopFifoSteQ(struct FifoSteQ *fq){
 	if(fq->head != NULL){
 
 		retSt = fq->head->stp;
-
-		/* change head position to the next state */
-		struct SteQ* rem = fq->head;
-		fq->head = fq->head->nxt;
-
-		/* don't kill the state in the process of removal/freeing of the head queue member */
-		rem->stp = NULL;
-		free(rem);
 		
+		if(fq->head->nxt != NULL){
+			/* change head position to the next state */
+			struct SteQ* rem = fq->head;
+			fq->head = fq->head->nxt;
+
+			/* don't kill the state in the process of removal/freeing of the head queue member */
+			rem->stp = NULL;
+			free(rem);
+			rem = NULL;
+		}
 	}
 	else{
 

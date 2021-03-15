@@ -117,13 +117,9 @@ char CleanGlobals(struct Globals *g){
 
 	if(g != NULL){
 		
-		printf("global '%p'\n", g);
 		pf = FreeACTrie(g);		
-		printf("global '%p'\n", g);
-		if(g != NULL){
-			free(g);		
-		}
 		
+		free(g);				
 		
 		g = NULL;
 	}
