@@ -108,7 +108,7 @@ char testTrieNovelBuild(){
 	}
 	InitGlobals(tg);
 	
-	tg->NumPats = 6;
+	tg->NumPats = 5;
 	
 	char patts[5][5] = 
 	{
@@ -130,7 +130,7 @@ char testTrieNovelBuild(){
 	}
 	
 	int i, j;
-	for(i = 0; i < 6; i++){
+	for(i = 0; i < 5; i++){
 		
 		pattz[i] = malloc(sizeof(char) * 5);
 		/* allocation check */
@@ -194,7 +194,7 @@ char testTrieStructure(){
 	}
 	InitGlobals(tg);
 	
-	tg->NumPats = 6;
+	tg->NumPats = 5;
 	
 	char patts[5][5] = 
 	{

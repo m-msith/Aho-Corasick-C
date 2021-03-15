@@ -53,12 +53,12 @@ int main(){
 	#else
 	
 		struct Globals *g = malloc(sizeof(struct Globals));		
-		struct State *r = malloc(sizeof(struct State));
+		
 		if(g == NULL){
 			printf("ERROR Init #2\n");
 			return 1;
 		}
-		InitGlobals(&g, &r);
+		InitGlobals(g);
 		
 		#ifdef PRINT
 			printf("~~~Global Init Pass~~~\n");

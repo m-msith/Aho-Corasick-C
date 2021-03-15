@@ -42,8 +42,8 @@ char BuildACTrieStructure(char **patts, struct Globals *g){
 		printf("~~~Building Goto Structure + Output~~~\n\n");
 	#endif
   
-	/* add a patterns, char at a time, skip last null entry */
-	for(row = 0; row < (g->NumPats - 1); row++){ 
+	/* add a patterns, char at a time */
+	for(row = 0; row < g->NumPats; row++){ 
 
 		/* reset counting var */
 		int col = 0;
