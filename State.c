@@ -1,15 +1,22 @@
 /**
-* Functions for the manipulation and control of states.
+* Functions for the control of states.
 *
-* Code: Martin
+* State.c - By: Martin Smith
 */
 
 #include "State.h"
 
 /*
-* Init a default state value (this should go in state)
+* Init default state values
+*
+* params-
+*
+* c (char): the char that the state represents
+* id (unsigned long): the numerical ID of the state
+* st (struct State *): the state to initialize 
+*
 */
-void DefaultStateInit(char c, int id, struct State *st){
+void DefaultStateInit(char c, unsigned long id, struct State *st){
 
 	st->stc = c; 
 	st->id = id;
@@ -20,10 +27,21 @@ void DefaultStateInit(char c, int id, struct State *st){
 	
 }
 
-/* Append an Output to a given Output structure */
-char AppendOutput(char c, struct Output **o){    
+/* Append an Output to a given Output Linked List
+*
+* return-
+*
+* (unsigned char): failure or success of append
+*
+* params-
+*
+* c (char): the output character
+* o (struct Output **): the output linked list to add to
+*
+**/
+unsigned char AppendOutput(char c, struct Output **o){    
     
-    char retVal = TRUE;
+    unsigned char retVal = TRUE;
     
     struct Output *tout;
     
@@ -62,12 +80,22 @@ char AppendOutput(char c, struct Output **o){
 }
 
 /* 
-*  Append an Output to a given Output structure (by copy, 
-*  could do by reference too, maybe mess with that later)
+* Append an Output to a given Output structure (by copy, 
+* could do by reference too, maybe mess with that later)
+*
+* return-
+*
+* (unsigned char): failure or success of cat
+*
+* params-
+*
+* from (struct Output **): the output Linked List to cat from
+* o (struct Output **): the output linked list to cat to
+*
 */
-char CatOutput(struct Output *from, struct Output **to){
+unsigned char CatOutput(struct Output *from, struct Output **to){
     
-    char retVal = TRUE;
+    unsigned char retVal = TRUE;
     
     struct Output *tout;
     struct Output *fout = from;
@@ -120,8 +148,17 @@ char CatOutput(struct Output *from, struct Output **to){
 
 /* 
 * Function to free an output linked list
-**/
-char FreeOutput(struct Output *o){
+*
+* return-
+*
+* (unsigned char): failure or success of free 
+*
+* params-
+*
+* o (struct Output *): the output linked list to free
+*
+*/
+unsigned char FreeOutput(struct Output *o){
 	
 	#ifdef PRINT
 		printf("	Starting Freeing Output\n");

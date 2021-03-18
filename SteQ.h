@@ -2,11 +2,9 @@
 #define _STEQ_
 
 /*
-* SteQ.h - By: Martin Smith
-*
 * Contains libraries needed by SteQ.c as well as function prototypes from SteQ.c
 *
-* Used by Build.c/h
+* SteQ.h - By: Martin Smith
 */
 #include "State.h"
 
@@ -45,7 +43,7 @@ void InitSteQ(struct SteQ *stq, struct State *s);
 /*
 *Takes care of initializing a FifoSteQ struct with a head and end SteQ's
 */
-char InitFifoSteQ(struct FifoSteQ *fq, struct State *s);
+unsigned char InitFifoSteQ(struct FifoSteQ *fq, struct State *s);
 
 /*
 *Add a state to a FifoSteQ (changes the end SteQ)

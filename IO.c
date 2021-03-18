@@ -1,8 +1,8 @@
 /**
-* IO.c - By: Martin Smith
-*
 * Functions held in this file are responsible for the simple IO bound functionality of the AC program, such
 * as reading patterns, reading in collection data, as well as writing output to ahooutput.
+*
+* IO.c - By: Martin Smith
 */
 
 #include "IO.h"
@@ -12,14 +12,23 @@
 * IOinP is responsible for reading through a patterns .txt file and returning in memory representations
 * of the patterns found in the file. patterns.txt is made to contain a newline dilimitaed list of patterns.
 * to build into the trie.
+*
+* return-
+*
+* (char **): the double pointer that contains the collection of imported patterns
+*
+* params-
+*
+* patNum (unsigned long *): number of patterns we find in the pattern file
+* fname (char *): the name of the file we are getting the patterns from
 */
-char **IOinP(int *patNum, char *fname){
+char **IOinP(unsigned long *patNum, char *fname){
 
 	char tmpC = '\0';
-	int  lngst = 0, tmpLen = 0;
+	unsigned long  lngst = 0, tmpLen = 0;
 
 	char **pats;
-	int *nPats = patNum;
+	unsigned long *nPats = patNum;
 
 	/* obtain file metadata */
 	FILE *fp = fopen(fname, "r");
@@ -117,6 +126,9 @@ char **IOinP(int *patNum, char *fname){
 			ptmpC[1] = '\0';
 			strncat(pats[i], ptmpC, lngst + NTS);
 			
+			//clear after use
+			free(ptmpC);
+			ptmpC = NULL;
 		}
 		
 		prevchar = tmpC;

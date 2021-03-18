@@ -1,13 +1,13 @@
 /**
 * Main function area for the Aho Corasick algorithm.
 *
-* Code: Martin
+* AC.c - By: Martin Smith
 */
 #include "AC.h"
 
-
 /**
-* Entry point for the Aho-Corasick program.
+* Entry point for the Aho-Corasick program. Reads user file input and then
+* either runs the algorithm or runs through the tests.
 */
 int main(){
 
@@ -19,7 +19,7 @@ int main(){
 		fname = "files.d/patterns.txt";
 	#endif
 
-	int patNum = 0;
+	unsigned long patNum = 0;
 	char **patterns = IOinP(&patNum, fname);
 	if(patterns == NULL){
 		printf("ERROR Init #1\n");
@@ -28,7 +28,7 @@ int main(){
 
 	#ifdef TEST
 	
-		char testsPassed = 0;
+		unsigned long testsPassed = 0;
 		printf("BEGIN ALL TESTS\n");
         
 		printf("\n	~~~START testing global init~~~\n\n");
@@ -48,29 +48,23 @@ int main(){
 		printf("\n	~~~END testing novel trie structure pointer analysis~~~\n\n");
 		
 		printf("END ALL TESTS\n");
-		printf("%d tests passed out of %d\n", testsPassed, TOTAL_TESTS);
+		printf("%lu tests passed out of %d\n", testsPassed, TOTAL_TESTS);
 		
 	#else
 	
-		struct Globals *g = malloc(sizeof(struct Globals));		
-		
-		if(g == NULL){
-			printf("ERROR Init #2\n");
-			return 1;
-		}
-		InitGlobals(g);
-		
-		#ifdef PRINT
-			printf("~~~Global Init Pass~~~\n");
-		#endif
-		
-		g->NumPats = patNum;
-
 		#ifdef PRINT
 			printf("~~~IO Init Pass~~~\n");
 		#endif
 
-		char badRetBuild = BuildACTrie(patterns, g);
+		struct AC_Trie *ACT = malloc(sizeof(struct AC_Trie));		
+		if(ACT == NULL){
+			printf("ERROR Init #2\n");
+			return 1;
+		}
+		
+		ACT->NumPats = patNum;
+
+		char badRetBuild = BuildACTrie(patterns, ACT);
 		if(badRetBuild == TRUE){
 			printf("ERROR Init #3\n");
 			return 1;
@@ -83,50 +77,14 @@ int main(){
 		
 	#endif
 
-	return 0;
-}
-
-/**
-*Take care of initializing the globals data structure to be used by the entire program
-*/
-void InitGlobals(struct Globals *g){	
-
-	g->Root = malloc(sizeof(struct State));
-
-	/* init root */
-	DefaultStateInit('\0', 0, g->Root);
-
-	/* root node is null and fails to itself */
-	g->Root->fState = g->Root;
-	g->Cur = g->Root;
-
-	g->IDCount = 0;
-
-}
-
-/**
-*Clean up an instance of the globals data type
-*/
-char CleanGlobals(struct Globals *g){
-
-	char pf;
-
-	#ifdef PRINT
-		printf("freeing global/ACTrie\n");
-	#endif
-
-	if(g != NULL){
-		
-		pf = FreeACTrie(g);		
-		
-		free(g);				
-		
-		g = NULL;
+	/* clean patterns structure */
+	unsigned long i;
+	for(i = 0; i < patNum; i++){
+		free(patterns[i]);
+		patterns[i] = NULL;
 	}
-	
-	#ifdef PRINT
-		printf("end freeing global/ACTrie\n\n");
-	#endif
+	free(patterns);
+	patterns = NULL;
 
-	return pf;
+	return 0;
 }

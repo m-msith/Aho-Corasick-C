@@ -1,8 +1,7 @@
-/** * AC_Trie.c
-*
+/*
 * This file is used to take care of building the AC Trie and running the AC algorithm. 
 * 
-* Building the AC trie consists of three build steps: Building the =Trie structure, 
+* Building the AC trie consists of three build steps: Building the Trie structure, 
 * building the Fail traces into the structure, and building the output structure into each node
 * of the Trie structure. Output building is taken care of at the end of building the structure 
 * and at the end of building the fail traces. 
@@ -10,6 +9,8 @@
 * Running through the AC trie requires an input string and an AC trie. The processing function
 * goes through the input string char by char, and processes the next state of the trie to determine
 * possible matches.
+*
+* AC_Trie.c - By: Martin Smith
 */
 
 #include "AC_Trie.h"
@@ -17,89 +18,138 @@
 
 /* 
 * Trie Build function
-* Returns: 1 if fail
+* Returns: 
+* 1 if fail during structure init
+* 2 if fail during structure build
+* 3 if fail during failtrace building
 */
-char BuildACTrie(char **patts, struct Globals *g){
+unsigned char BuildACTrie(char **patts, struct AC_Trie *act){
 
-	char retVal = 0;
+	unsigned char retVal = 0;
 	
-    retVal = BuildACTrieStructure(patts, g);
-    retVal = BuildACTrieFailTraces(g);
+	retVal = InitACTrie(act);
+    retVal = BuildACTrieStructure(patts, act);
+    retVal = BuildACTrieFailTraces(act);
     
 	return retVal;
 
 }
 
+/**
+* Take care of initializing the AC_Trie data structure to be used for pattern matching
+*
+* returns-
+*
+* (unsigned char): whether or not the function failed
+*
+* params-
+*
+* act (AC_Trie *): the AC_Trie to initialize
+*
+*/
+unsigned char InitACTrie(struct AC_Trie *act){	
 
-/* take care of building the root data structure and initial outputs*/
-char BuildACTrieStructure(char **patts, struct Globals *g){
+	unsigned char retVal = FALSE;
+
+	act->Root = malloc(sizeof(struct State));
+	if(act->Root == NULL){
+		retVal = 1;
+	}
+
+	/* init root */
+	DefaultStateInit('\0', 0, act->Root);
+
+	/* root node is null and fails to itself */
+	act->Root->fState = act->Root;
+	act->Cur = act->Root;
+
+	act->IDCount = 0;
+	
+	return retVal;
+
+}
+
+/* Using the 2D pattern import, build the AC_Trie. The Trie is built by 
+* cycling through the patterns char by char and creating a state for the 
+* char and placing it on the trie at the correct position. 
+* 
+* returns-
+* (unsigned char): the fail/success of the build
+* 
+* params-
+*
+* patts (char **): array of char *, a pattern per char *
+* act (AC_Trie*): pointer to the AC_Trie structure
+*
+* */
+unsigned char BuildACTrieStructure(char **patts, struct AC_Trie *act){
     
-    char retVal = FALSE;
-    int row = 0;
+    unsigned char retVal = FALSE;
+    unsigned long row = 0;
   
 	#ifdef PRINT
 		printf("!!!!BUILDING TRIE!!!!\n\n");
 		printf("~~~Building Goto Structure + Output~~~\n\n");
 	#endif
   
-	/* add a patterns, char at a time */
-	for(row = 0; row < g->NumPats; row++){ 
+	/* Add a patterns, char at a time */
+	for(row = 0; row < act->NumPats; row++){ 
 
-		/* reset counting var */
-		int col = 0;
+		unsigned long col = 0;
 	
+		/* When we hit null, it's time to move to the next string */
 		while(patts[row][col] != '\0'){
 
-			/* cycle through the trie to the first available new state point*/
-			while(ACgoto(g, patts[row][col]) == TRUE){
+			/* Cycle through the trie to the first available new state point */
+			while(ACgoto(act, patts[row][col]) == TRUE){
 		
 				#ifdef PRINT	
-					printf("skipping %c, already in the trie @ %p\n", patts[row][col], g->Cur);
+					printf("skipping %c, already in the trie @ %p\n", patts[row][col], act->Cur);
 				#endif
 			
 				col++;
 			}	  
 		
-			/* add new element to the tree at the appropriate position if we didn't cycle to the last value */
+			/* Add new element to the tree at the appropriate position if we didn't cycle to the last value */
 			if(patts[row][col] != '\0'){
 			  
-				/* only ever one child element, else have to use the child's sibling element */
-				if(g->Cur->cState == NULL){
+				/* priority is to add a child element */
+				if(act->Cur->cState == NULL){
 					
-					g->Cur->cState = malloc(sizeof(struct State));
+					act->Cur->cState = malloc(sizeof(struct State));
 					/* failed allocation */
-					if(g->Cur->cState == NULL){
+					if(act->Cur->cState == NULL){
 						printf("ERROR Build #1\n");
-						return 1;		  
+						retVal = 2;		  
 					}
 						
-					g->Cur = g->Cur->cState;		
+					act->Cur = act->Cur->cState;		
 				}
-				/* go to child's sibling state if there is a child state already */
+				/* add a sibling if there is already a child */
 				else{
 					
-					g->Cur = g->Cur->cState;	  	
+					act->Cur = act->Cur->cState;	  	
 
 					/* cycle to the last sibling state to postpend */
-					while(g->Cur->sState != NULL){
-						g->Cur = g->Cur->sState;
+					while(act->Cur->sState != NULL){
+						act->Cur = act->Cur->sState;
 					}
 
-					g->Cur->sState = malloc(sizeof(struct State));
+					act->Cur->sState = malloc(sizeof(struct State));
 					/* failed allocation */
-					if(g->Cur->sState == NULL){
+					if(act->Cur->sState == NULL){
 						printf("ERROR BUILD #2\n");
-						return 1;
+						retVal = 2;
 					}
 
-					g->Cur = g->Cur->sState;
+					act->Cur = act->Cur->sState;
 				}
 			  
-				/* Init new state to the end of the trie */
-				DefaultStateInit(patts[row][col], g->IDCount++, g->Cur);
+				/* Init the new state */
+				DefaultStateInit(patts[row][col], act->IDCount++, act->Cur);
 
 				#ifdef PRINT	  
-					printf("Adding state \"%c\" @ %p\n", g->Cur->stc, g->Cur);
+					printf("Adding state \"%c\" @ %p\n", act->Cur->stc, act->Cur);
 				#endif
 
 
@@ -112,17 +162,17 @@ char BuildACTrieStructure(char **patts, struct Globals *g){
 
 		}
 
-		/* reset col */
+		/* reset col for output */
 		col = 0;
 
 		#ifdef PRINT
-			//printf("adding output: ");
+			printf("adding output: ");
 		#endif
 
-		/* Add the output */
+		/* Add the output to the last state of the addition */
 		while(patts[row][col] != '\0'){
 			
-            AppendOutput(patts[row][col], &g->Cur->ot_head);
+            AppendOutput(patts[row][col], &act->Cur->ot_head);
             
 			#ifdef PRINT
 				printf("%c", patts[row][col]);
@@ -131,19 +181,16 @@ char BuildACTrieStructure(char **patts, struct Globals *g){
 			col++;
 		}
 	
-		/* set to null to delimit, also good practice to have this for strings */
-		AppendOutput('\0', &g->Cur->ot_head);
+		/* set to null to delimit output, also good practice to have this for strings */
+		AppendOutput('\0', &act->Cur->ot_head);
         
 		#ifdef PRINT
-			printf(". First char %c, number of chars %d, for state '%c' @ %p\n", g->Cur->ot_head->c, col, g->Cur->stc, g->Cur);
-			printf("---inserted pattern num %d into the trie---\n", row);	
+			printf(". First char %c, number of chars %lu, for state '%c' @ %p\n", act->Cur->ot_head->c, col, act->Cur->stc, act->Cur);
+			printf("---inserted pattern num %lu into the trie---\n", row);	
 		#endif
 		
-		/* reset to root for next pattern or task
-		*  this reset only takes place after the ingestion
-		*  of one pattern to properly build upon itself with the next one
-		*  which will either share a branch or build a new one */
-		g->Cur = g->Root;
+		/* reset to root to build on further */
+		act->Cur = act->Root;
 	
 	}
 
@@ -155,13 +202,25 @@ char BuildACTrieStructure(char **patts, struct Globals *g){
 }
 
 
-/* take care of adding failure traces as well as tying up output*/
-char BuildACTrieFailTraces(struct Globals *g){
+/* Build the failure traces into a AC_Trie structure. These are allow the algorigthm 
+*  to successfully process in an O(n) fashion where n is the size of the processed 
+*  data. 
+*
+*  Essentially, to add the failtraces, BFS through Trie, looking at previous level 
+*  for applicable failure states.
+*
+*  return-
+*  (unsinged char): whether or not building the failure traces encountered an error 
+*
+*  params-
+*
+*  act (*): the AC_Trie structure that we are adding failure traces to.
+*
+*/
+unsigned char BuildACTrieFailTraces(struct AC_Trie *act){
     
-    char retVal = FALSE;
-    
-    /** Build Fail Traces **/
-
+    unsigned char retVal = FALSE;
+	
 	#ifdef PRINT
 		printf("\n~~~Building Failure Traces into Trie + Output~~~\n\n");
 	#endif
@@ -171,25 +230,23 @@ char BuildACTrieFailTraces(struct Globals *g){
 	/* failed allocation */
 	if(faQ == NULL){
 		printf("ERROR BUILD #6\n");
-		return 1;
+		retVal = 1;
 	}
 
 	/* Set the initial failure state of level one states to the root states.
 	*  Add them to the failure addition queue to be considered as failure states 
 	*  for states at the next level of the trie. */	
 
-	/* first push is the child of the root state */
-	struct State *qAddSt = g->Root->cState;
-	qAddSt->fState = g->Root;
-	char faQinit = InitFifoSteQ(faQ, qAddSt);
-    /* make sure we got through init fine */
+	/* first, first level state is child of the root state */
+	struct State *qAddSt = act->Root->cState;
+	qAddSt->fState = act->Root;
+	unsigned char faQinit = InitFifoSteQ(faQ, qAddSt);
     if(faQinit == FALSE){
         printf("ERROR BUILD #11\n");
-        return 1;
+        retVal = 1;
     }
 
-	/* next push the sibling states of the root state child 
-	*  as they are at the 'same level' */
+	/* push the sibling states (the other first level states) */
 	while(qAddSt->sState != NULL){
 		
 		#ifdef PRINT
@@ -197,9 +254,8 @@ char BuildACTrieFailTraces(struct Globals *g){
 		#endif
 
 		qAddSt = qAddSt->sState;
-
-		/* 1st level always fails to root node */
-		qAddSt->fState = g->Root;
+		
+		qAddSt->fState = act->Root;
 		PushFifoSteQ(faQ, qAddSt);
 
 	}
@@ -208,72 +264,66 @@ char BuildACTrieFailTraces(struct Globals *g){
 		printf("Failure Q: Added state \"%c\" @ %p to the queue\n", qAddSt->stc, qAddSt);
 	#endif
  
-	/* process queued states until there are no more, signifying 
-	*  that we got through the whole trie */
+	/* when the head state is null, we processed every tree node*/
 	while(faQ->head->stp != NULL){
 		
-		struct State *popSt = PopFifoSteQ(faQ);	
+		struct State *popSt = PopFifoSteQ(faQ);		  	 
+		struct State *holdSt = popSt->cState;
 
-		/* visit each of the possible child states of the popped state */		  	 
-		struct State *gtSt = popSt->cState;
+		/* Traverse the current trie row column (all sibling states) */
+		while(holdSt != NULL){
 
-		/* Traverse the current trie row, we added all rows during the 
-		   first sibling loop, so no need to cycle through them */
-		while(gtSt != NULL){
-
-			/* add the next level states to the fifo queue
-			*  this will get us through the entire queue
-			*  as we cycle until empty */
-			PushFifoSteQ(faQ, gtSt);
+			/* add the next level states to the fifo queue*/
+			PushFifoSteQ(faQ, holdSt);
 			#ifdef PRINT
-				printf("Failure Q: Added state \"%c\" @ %p to the queue\n", gtSt->stc, gtSt);
+				printf("Failure Q: Added state \"%c\" @ %p to the queue\n", holdSt->stc, holdSt);
 			#endif
 
 			/* get and goto every failstate to see if it is a failstate
 			*  for the node being tested for failstates */
 			struct State *fSt = GetFailState(popSt); 	    
-			g->Cur = fSt;
+			act->Cur = fSt;
 
 			/* this loop backtraces through the data structure to find the closest (level)
 			*  failstate. The failstate is a point where the search could continue
 			*  on a different branch, if the current branch is deemed not tennable.
 			*  In other words, the failstate fails to the nearest possibility of 
 			*  a match, whether it start over or continue on a different branch */
-			while(ACgoto(g,gtSt->stc) == FALSE){
+			while(ACgoto(act, holdSt->stc) == FALSE){
 
 				/* break if we're the root node, it's the last possible fail point */
-				if(g->Cur->stc == '\0'){
+				if(act->Cur->stc == '\0'){
 					break;
 				}
 				/* otherwise, continue to backtrack until we succeed in moving foward */
 				else{
 					fSt = GetFailState(fSt);
-					g->Cur = fSt;
+					act->Cur = fSt;
 				}
 			}
 
 			/* whether it be the root node or a different branch, we have found our 
 			*  next possible tennable branch, set the fail to that point */
-			gtSt->fState = g->Cur;
+			holdSt->fState = act->Cur;
 
 			#ifdef PRINT
-				printf(" \"%c\" set to fail at \"%c\" @ %p \n", gtSt->stc, gtSt->fState->stc, gtSt->fState);	
+				printf(" \"%c\" set to fail at \"%c\" @ %p \n", holdSt->stc, holdSt->fState->stc, holdSt->fState);	
 			#endif
 
 			/* Take care of Output, we add if the fail state has an output */
-			if(gtSt->fState->ot_head != NULL){
+			if(holdSt->fState->ot_head != NULL){
 				
-               CatOutput(gtSt->fState->ot_head, &gtSt->ot_head);
+               CatOutput(holdSt->fState->ot_head, &holdSt->ot_head);
                 
 				#ifdef PRINT
-					printf("\n first output char: '%c'\n", gtSt->ot_head->c);		
+					printf("\n first output char: '%c'\n", holdSt->ot_head->c);		
 				#endif
 			}
 
 			/* we process through the trie level by level, so, move through siblings
 			*  and after processing the last sibling, move to the next child in the 
 			*  fifo queue */
-			gtSt = gtSt->sState;
+			holdSt = holdSt->sState;
 		
 		}
 
@@ -292,23 +342,31 @@ char BuildACTrieFailTraces(struct Globals *g){
 }
 
 /**
-*Take care of going to the next state in the Trie
+* Try to take a step in the given AC trie to the given char(state).
+*
+* returns - 
+* (usigned char): whether or not we were able to go to the next state in the 
+* AC_Trie
+*
+* params -
+* act (AC_Trie *): the AC_Trie we are attempting to step through
+* nxt (char): the character(State) we are attempting to travel to
 */
-char ACgoto(struct Globals *g, char nxt){
+unsigned char ACgoto(struct AC_Trie *act, char nxt){
 
-	char pass = FALSE;
+	unsigned char pass = FALSE;
 	
 	/* check current's child, if it has one, and all its siblings to see if we can proceed */
-	if(g->Cur->cState != NULL){
+	if(act->Cur->cState != NULL){
 		
-		/* printf("GOTO: current: %c, childstate of %c, moving to %c\n", g->Cur->stc, g->Cur->cState->stc, nxt);
-		* move to child if it's present */
-		struct State *cmpSt = g->Cur->cState;
+		
+		/* compare and move to child state if it's present and matching */
+		struct State *cmpSt = act->Cur->cState;
 
 		if(cmpSt->stc == nxt){
 			
 			pass = TRUE;
-			g->Cur = cmpSt;
+			act->Cur = cmpSt;
 			
 		}
 		else{
@@ -321,7 +379,7 @@ char ACgoto(struct Globals *g, char nxt){
 				/* if we found a match, break out of searching through siblings */
 				if(cmpSt->stc == nxt){
 					pass = TRUE;
-					g->Cur = cmpSt;
+					act->Cur = cmpSt;
 					break;
 				}
 			
@@ -337,7 +395,13 @@ char ACgoto(struct Globals *g, char nxt){
 }
 
 /**
-*Get a state's failure trace location
+* Get a state's failure trace location
+*
+* returns-
+* (struct State *): the state that is listed as the current states fail state
+*
+* params-
+* st (struct State *): the state we are getting the failstate of.
 */
 struct State *GetFailState(struct State *st){
 	return st->fState;
@@ -346,44 +410,55 @@ struct State *GetFailState(struct State *st){
 /*
 * Search a given string with a given ACTrie for all patterns 
 * in the ACTrie.
+*
+* returns-
+* (unsigned long): the number of patterns found by the AC_Trie
+*
+* params-
+* act( *): the AC_Trie (holds the patterns) that processes the input for pattern matches
+* searchString(char *): the string to look for patterns in ~ input string
 */
-unsigned int AC_Process(struct Globals *g, char *searchString){
+unsigned long AC_Process(struct AC_Trie *act, char *searchString){
 
 	unsigned long index = 0;
-	unsigned int pattFound = 0;
+	unsigned long pattFound = 0;
 	
 	/* Always start at ROOT */
-	g->Cur = g->Root;
+	act->Cur = act->Root;
 	
 	while(searchString[index] != '\0'){
 				
-		while((ACgoto(g, searchString[index]) == FALSE)){
+		while((ACgoto(act, searchString[index]) == FALSE)){
 			
 			/* If we are the root at this point, we have failed 
 			   back twice and need to move on */
-			if(g->Cur == g->Root){
+			if(act->Cur == act->Root){
 				break;
 			}
 			
 			/* travel to current's fail state and try again */
-			g->Cur = GetFailState(g->Cur);
+			act->Cur = GetFailState(act->Cur);
 		}		
 		
 		/* If we arrived at a state with an output, print it for now 
 		   and keep track of the number of findings */
-		if(g->Cur->ot_head != NULL){
-			struct Output *tmp = g->Cur->ot_head;
+		if(act->Cur->ot_head != NULL){
+			struct Output *tmp = act->Cur->ot_head;
             
 			while(tmp != NULL){
                 
 				if(tmp->c == '\0'){
 					pattFound++;
 					
-					printf("\n");
+					#ifdef PRINT
+						printf("\n");
+					#endif
 					
 				}
 				
-                printf("%c", tmp->c);
+				#ifdef PRINT
+					printf("%c", tmp->c);
+				#endif
 				tmp = tmp->nxt;
 				
 			}
@@ -399,29 +474,74 @@ unsigned int AC_Process(struct Globals *g, char *searchString){
 	return pattFound;
 }	
 
+/**
+* Clean up an instance of the AC_Trie data type
+*
+* return-
+*
+* (unsigned char): whether or not the clean worked
+*
+* params-
+*
+* act (AC_Trie *): the trie container to free
+*
+*/
+unsigned char CleanACTrie(struct AC_Trie *act){
+
+	char retVal;
+
+	#ifdef PRINT
+		printf("freeing global/ACTrie\n");
+	#endif
+
+	if(act != NULL){
+		
+		retVal = FreeACTrie(act);		
+		
+		free(act);				
+		
+		act = NULL;
+	}
+	
+	#ifdef PRINT
+		printf("end freeing global/ACTrie\n\n");
+	#endif
+
+	return retVal;
+}
+
 /*
 * Free a given AC trie structure by searching through the 
-* trie and removing depth first (child strings)
+* trie and freeing via DFS
+*
+* returns-
+*
+* (unsigned char): whether or not the free had an error
+*
+* params-
+* 
+* act (AC_Trie *): the AC_Trie to free
+*
 */
-char FreeACTrie(struct Globals *g){
+unsigned char FreeACTrie(struct AC_Trie *act){
 	
 	#ifdef PRINT
 		printf("freeing AC trie\n");
 	#endif
 	
-	char pf = TRUE;
+	unsigned char retVal = TRUE;
 	
 	/* Traverse the trie and free the states on pop */
 	struct FifoSteQ *travQ = malloc(sizeof(struct FifoSteQ));	
-	
-	
-	char inittest = InitFifoSteQ(travQ, g->Root);
+	unsigned char inittest = InitFifoSteQ(travQ, act->Root);
 	if(inittest != TRUE){
-		pf = FALSE;
+		retVal = FALSE;
 	}
 	
+	/* process until we run out of states */
 	while(travQ->head->stp != NULL){
 		
+		/* hold state for removal */
 		struct State *killCSt;
 		struct State *popSt = PopFifoSteQ(travQ);
 		
@@ -443,8 +563,8 @@ char FreeACTrie(struct Globals *g){
 				PushFifoSteQ(travQ, strav);
 			}
 			
-			
-			pf += FreeOutput(killCSt->ot_head);
+			/* remove the output Linked List before the state */
+			retVal += FreeOutput(killCSt->ot_head);
 			free(killCSt);
 			killCSt = NULL;
 			
@@ -457,14 +577,16 @@ char FreeACTrie(struct Globals *g){
 			printf("killing '%c'\n", killCSt->stc);
 		#endif
 		
-		pf += FreeOutput(killCSt->ot_head);
+		/* remove the output Linked List before the state */
+		retVal += FreeOutput(killCSt->ot_head);
 		free(killCSt);
 		killCSt = NULL;
 	}
 	
+	/* free the queue after it's been fully popped */
 	free(travQ);
 	travQ = NULL;
 	
 	
-	return pf;
+	return retVal;
 }

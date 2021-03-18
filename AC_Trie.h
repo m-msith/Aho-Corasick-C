@@ -2,18 +2,18 @@
 #define _TRIE_
 
 /* 
-* AC_Trie.h
+* Holds the Trie structure and related info type that is used throught the program
 *
-* Holds the Global Trie structure and related info type that is used throught the program
+* AC_Trie is a structure that contains a pointer to the current (Cur) and root (Root) nodes of
+* a Aho-Corasick pattern trie.
 *
-* Globals is a structure that contains a pointer to the current (Cur) and root (Root) nodes of
-* the Aho-Corasick pattern trie.
+* IDCount is a variable used to keep track and set a unique ID to each State node in the trie
 *
-* IDCount is a global variable used to keep track and set a unique ID to each State node in the trie
+* AC_Trie.h - By: Martin Smith
 */
 #include "State.h"
 
-struct Globals{
+struct AC_Trie{
 
 	struct State *Cur;
 	struct State *Root;
@@ -25,24 +25,31 @@ struct Globals{
 };
 
 /* Function that builds an AC pattern trie */
-char BuildACTrie(char **patts, struct Globals *g);
+unsigned char BuildACTrie(char **patts, struct AC_Trie *act);
+
+/* Method used for initalizing the values of the the AC_Trie structure */
+unsigned char InitACTrie(struct AC_Trie *act);
 
 /* take care of building the root data structure and initial outputs*/
-char BuildACTrieStructure(char **patts, struct Globals *g);
+unsigned char BuildACTrieStructure(char **patts, struct AC_Trie *act);
 
 /* take care of adding failure traces as well as tying up output*/
-char BuildACTrieFailTraces(struct Globals *g);
+unsigned char BuildACTrieFailTraces(struct AC_Trie *act);
 
 /* Function that allows for moving along the Trie structure */
-char ACgoto(struct Globals *g, char nxt);
+unsigned  char ACgoto(struct AC_Trie *act, char nxt);
 
 /* Function that returns the current State's fail state */
 struct State *GetFailState(struct State *st);
 
 /* Function that processes an input with a particular AC pattern trie */
-unsigned int AC_Process(struct Globals *g, char *testString);
+unsigned long AC_Process(struct AC_Trie *act, char *testString);
 
-/* Function that cleans a global structure, including the ACTrie */
-char FreeACTrie(struct Globals *g);
+/* Method use for the cleanup of the AC_Trie container structure */
+unsigned char CleanACTrie(struct AC_Trie *act);
+
+/* Function that cleans a AC_Trie structure */
+unsigned char FreeACTrie(struct AC_Trie *act);
+
 
 #endif

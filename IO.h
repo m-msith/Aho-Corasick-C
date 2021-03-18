@@ -2,17 +2,15 @@
 #define _IO_
 
 /** 
-* IO.h - By: Martin Smith
-*
 * Included are references to needed libraries and function prototypes for IO.c
 *
-* Used by AC.c/h
+* IO.h - By: Martin Smith
 */
 
 #include "DefLib.h"
 
 /* Function used for importing patterns from file */
-char **IOinP(int *patNum, char *fname);
+char **IOinP(unsigned long *patNum, char *fname);
 
 
 #endif

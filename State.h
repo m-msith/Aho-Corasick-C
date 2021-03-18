@@ -2,11 +2,9 @@
 #define _STATE_
 
 /**
+* Contains references to needed libraries by State.c as well as function prototypes and variables 
+*
 * State.h - by Martin Smith
-*
-* Contains references to needed libraries by State.c as well as function prototypes
-*
-* Used by AC.c/h SteQ.c/h 
 */
 
 #include "DefLib.h"
@@ -42,21 +40,21 @@ struct State{
 /*
 * Init a default state with ID, character, and null pointer values
 */
-void DefaultStateInit(char c, int id, struct State *st);
+void DefaultStateInit(char c, unsigned long id, struct State *st);
 
 /* 
 * Add a new Output structure to a given Output linked list 
 */
-char AppendOutput(char c, struct Output **o);
+unsigned char AppendOutput(char c, struct Output **o);
 
 /*
 * Concatanate two Output structure linked lists
 */
-char CatOutput(struct Output *from, struct Output **to);
+unsigned char CatOutput(struct Output *from, struct Output **to);
 
 /*
 * Clean up an Output structure linked list 
 */
-char FreeOutput(struct Output *o);
+unsigned char FreeOutput(struct Output *o);
 
 #endif
