@@ -32,7 +32,7 @@ struct State{
 	struct State *sState;
 	struct State *fState;
 
-	/* output is variable in size, uses a linked list of characters */\
+	/* output is variable in size, uses a linked list of characters */
 	struct Output *ot_head;
 
 };
