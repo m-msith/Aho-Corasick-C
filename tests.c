@@ -1,23 +1,24 @@
 /**
 *Contains various tests to run
+*
+* tests.c - By: Martin Smith
 */
 
 
 #include "tests.h"
 /*
-* Ensure that the globals value inits properly
+* Ensure that the AC_Trie value inits properly
 */
 char testGlobalInit(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = malloc(sizeof(struct Globals));	
+	struct AC_Trie *tg = malloc(sizeof(struct AC_Trie));	
 	if(tg == NULL){
 		printf("ERROR testGlobalInit: global allocation failure\n");
 		return FALSE;
 	}
-	InitGlobals(tg);
-	
+	InitACTrie(tg);
 	
 	if(tg->Root != tg->Cur){
 		pf = FALSE;
@@ -48,11 +49,14 @@ char testGlobalInit(){
 		printf("Test passed, no issues!\n");		
 	}
 	
-	CleanGlobals(tg);
+	CleanACTrie(tg);
 	
 	return pf;
 }
 
+/*
+* Ensure we read in a pattern file fine
+*/
 char testPatStore(char **pats){
 
 	char pf = TRUE;
@@ -101,12 +105,11 @@ char testTrieNovelBuild(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = malloc(sizeof(struct Globals));
+	struct AC_Trie *tg = malloc(sizeof(struct AC_Trie));
 	if(tg == NULL){
 		pf = FALSE;
 		printf("ERROR testTrieNovelBuild: Global init\n");
 	}
-	InitGlobals(tg);
 	
 	tg->NumPats = 5;
 	
@@ -174,7 +177,12 @@ char testTrieNovelBuild(){
 		printf("ERROR testTrieNovelBuild: Wrong number of patterns found!\n");
 	}
 	
-	CleanGlobals(tg);
+	/* everybody cleanup */
+	CleanACTrie(tg);
+	for(i = 0; i < 5; i++){
+		free(pattz[i]);
+	}
+	free(pattz);
 	
 	if(pf == TRUE){
 		printf("\nTest passed, no issues!\n");		
@@ -183,16 +191,18 @@ char testTrieNovelBuild(){
 	return pf;
 }
 
+/*
+* create an AC_Trie and inspect every value ensuring it's correctness
+*/
 char testTrieStructure(){
 	
 	char pf = TRUE;
 	
-	struct Globals *tg = malloc(sizeof(struct Globals));
+	struct AC_Trie *tg = malloc(sizeof(struct AC_Trie));
 	if(tg == NULL){
 		pf = FALSE;
 		printf("ERROR testTrieStructure: Global init\n");
 	}
-	InitGlobals(tg);
 	
 	tg->NumPats = 5;
 	
@@ -567,7 +577,13 @@ char testTrieStructure(){
 		}
 	}
 	
-	CleanGlobals(tg);
+	/* everybody cleanup */
+	CleanACTrie(tg);
+	for(i = 0; i < 5; i++){
+		free(pattz[i]);
+	}
+	free(pattz);
+	free(travQ);
 	
     if(pf == TRUE){
         printf("Test passed, no issues!\n");		

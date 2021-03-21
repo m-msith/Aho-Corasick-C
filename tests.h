@@ -2,7 +2,9 @@
 #define _TESTS_
 
 /*
-* Contains various test prototypes  
+* Test Prototypes  
+*
+* tests.h - By: Martin Smith
 */
 
 #include "DefLib.h"
@@ -17,7 +19,5 @@ char testPatStore(char *pats[]);
 char testTrieNovelBuild();
 
 char testTrieStructure();
-
-char testTrieLongStringsBuild();
 
 #endif

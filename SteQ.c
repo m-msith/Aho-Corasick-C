@@ -1,15 +1,18 @@
 /*
-* SteQ.c - By: Martin Smith
-*
 * Contains functions used to initialize and manage a first in first out queue of states
 *
-* Used by Build.c
+* SteQ.c - By: Martin Smith
 */
 
 #include "SteQ.h"
 
 /*
 * Default initializaiton for a state queue
+*
+* params-
+*
+* stq (struct SteQ*): the state queue to init 
+* s (struct State*): the state to add to stq
 */
 void InitSteQ(struct SteQ *stq, struct State *s){
 
@@ -20,10 +23,20 @@ void InitSteQ(struct SteQ *stq, struct State *s){
 
 /**
 * Default initialization for a first in first out state queue
+*
+* return-
+*
+* (unsigned char): pass or fail 
+*
+* params-
+*
+* fq (struct FifoSteQ*): The Fifo State Queue to Init
+* s (struct State*): the state to init the state queue with
+*
 */
-char InitFifoSteQ(struct FifoSteQ *fq, struct State *s){
+unsigned char InitFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
-    char ret = TRUE;
+    unsigned char ret = TRUE;
 
 	fq->head = malloc(sizeof(struct SteQ));
     /* Allocation check */
@@ -46,6 +59,12 @@ char InitFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
 /*
 * Add a member to a fifo state queue end, or init if empty 
+*
+* params-
+*
+* fq (struct FifoSteQ *): the queue to push
+* s (struct State *): the state to push on the queue 
+*
 */
 void PushFifoSteQ(struct FifoSteQ *fq, struct State *s){
 
@@ -67,6 +86,15 @@ void PushFifoSteQ(struct FifoSteQ *fq, struct State *s){
 /*
 * Remove a member from the queue and return a pointer to the member that was removed
 * If the head is at NULL, there are no states in the queue, return NULL
+*
+* return-
+*
+* (struct State *): the state that was just popped off of the queue 
+*
+* params-
+*
+* fq (struct FifoSteQ *): the queue that we want to pop
+*
 */
 struct State *PopFifoSteQ(struct FifoSteQ *fq){
 
