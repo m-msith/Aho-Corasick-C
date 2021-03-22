@@ -125,4 +125,25 @@ struct State *PopFifoSteQ(struct FifoSteQ *fq){
 
 }
 
+/*
+* Ensure the queue has been fully popped and then free the end.
+*
+* params-
+*
+* fq (struct FifoSteQ *): the empty queue that we want to free from the evil clutches of malloc 
+*
+*/
+void CleanFifoSteQ(struct FifoSteQ *fq){
+
+    while(fq->head->stp != NULL){
+		
+		(void) PopFifoSteQ(fq);
+        
+    }
+    
+    free(fq->end);
+    fq->end = NULL;
+
+}
+
 

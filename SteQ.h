@@ -57,5 +57,9 @@ void PushFifoSteQ(struct FifoSteQ *fq, struct State *s);
 */
 struct State *PopFifoSteQ(struct FifoSteQ *fq);
 
+/*
+* Free a queue's members
+*/
+void CleanFifoSteQ(struct FifoSteQ *fq);
 
 #endif
