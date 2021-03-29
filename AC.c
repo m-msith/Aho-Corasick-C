@@ -79,7 +79,7 @@ int main(){
 
 	/* clean patterns structure */
 	unsigned long i;
-	for(i = 0; i < patNum; i++){
+	for(i = 0; i < patNum + 1; i++){
 		free(patterns[i]);
 		patterns[i] = NULL;
 	}

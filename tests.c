@@ -583,6 +583,7 @@ char testTrieStructure(){
 		free(pattz[i]);
 	}
 	free(pattz);
+    CleanFifoSteQ(travQ);
 	free(travQ);
 	
     if(pf == TRUE){

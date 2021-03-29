@@ -330,6 +330,7 @@ unsigned char BuildACTrieFailTraces(struct AC_Trie *act){
 	} 
 	
 	/* free queue memory */
+    CleanFifoSteQ(faQ);
 	free(faQ);
 	faQ = NULL;
 	
@@ -584,6 +585,7 @@ unsigned char FreeACTrie(struct AC_Trie *act){
 	}
 	
 	/* free the queue after it's been fully popped */
+    CleanFifoSteQ(travQ);
 	free(travQ);
 	travQ = NULL;
 	

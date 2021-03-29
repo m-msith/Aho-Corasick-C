@@ -1,0 +1,446 @@
+~/Desktop/Aho-Corasick-C $ valgrind -v ./ac 
+==4490== Memcheck, a memory error detector
+==4490== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==4490== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==4490== Command: ./ac
+==4490== 
+--4490-- Valgrind options:
+--4490--    -v
+--4490-- Contents of /proc/version:
+--4490--   Linux version 4.8.0-53-generic (buildd@lgw01-56) (gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.4) ) #56~16.04.1-Ubuntu SMP Tue May 16 01:18:56 UTC 2017
+--4490-- 
+--4490-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-avx-bmi
+--4490-- Page sizes: currently 4096, max supported 4096
+--4490-- Valgrind library directory: /usr/lib/valgrind
+--4490-- Reading syms from /home/mancer/Desktop/Aho-Corasick-C/ac
+--4490-- Reading syms from /lib/x86_64-linux-gnu/ld-2.23.so
+--4490--   Considering /lib/x86_64-linux-gnu/ld-2.23.so ..
+--4490--   .. CRC mismatch (computed 9bc477cd wanted 3da2f12a)
+--4490--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/ld-2.23.so ..
+--4490--   .. CRC is valid
+--4490-- Reading syms from /usr/lib/valgrind/memcheck-amd64-linux
+--4490--   Considering /usr/lib/valgrind/memcheck-amd64-linux ..
+--4490--   .. CRC mismatch (computed eea41ea9 wanted 2009db78)
+--4490--    object doesn't have a symbol table
+--4490--    object doesn't have a dynamic symbol table
+--4490-- Scheduler: using generic scheduler lock implementation.
+--4490-- Reading suppressions file: /usr/lib/valgrind/default.supp
+==4490== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-4490-by-mancer-on-???
+==4490== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-4490-by-mancer-on-???
+==4490== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-4490-by-mancer-on-???
+==4490== 
+==4490== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==4490== don't want to do, unless you know exactly what you're doing,
+==4490== or are doing some strange experiment):
+==4490==   /usr/lib/valgrind/../../bin/vgdb --pid=4490 ...command...
+==4490== 
+==4490== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==4490==   /path/to/gdb ./ac
+==4490== and then give GDB the following command
+==4490==   target remote | /usr/lib/valgrind/../../bin/vgdb --pid=4490
+==4490== --pid is optional if only one valgrind process is running
+==4490== 
+--4490-- REDIR: 0x401cf90 (ld-linux-x86-64.so.2:strlen) redirected to 0x3809e181 (???)
+--4490-- Reading syms from /usr/lib/valgrind/vgpreload_core-amd64-linux.so
+--4490--   Considering /usr/lib/valgrind/vgpreload_core-amd64-linux.so ..
+--4490--   .. CRC mismatch (computed 2567ccf6 wanted 49420590)
+--4490--    object doesn't have a symbol table
+--4490-- Reading syms from /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so
+--4490--   Considering /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so ..
+--4490--   .. CRC mismatch (computed 0e27c9a8 wanted ac585421)
+--4490--    object doesn't have a symbol table
+==4490== WARNING: new redirection conflicts with existing -- ignoring it
+--4490--     old: 0x0401cf90 (strlen              ) R-> (0000.0) 0x3809e181 ???
+--4490--     new: 0x0401cf90 (strlen              ) R-> (2007.0) 0x04c31020 strlen
+--4490-- REDIR: 0x401b8e0 (ld-linux-x86-64.so.2:index) redirected to 0x4c30bc0 (index)
+--4490-- REDIR: 0x401bb00 (ld-linux-x86-64.so.2:strcmp) redirected to 0x4c320d0 (strcmp)
+--4490-- REDIR: 0x401dcf0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4c35270 (mempcpy)
+--4490-- Reading syms from /lib/x86_64-linux-gnu/libc-2.23.so
+--4490--   Considering /lib/x86_64-linux-gnu/libc-2.23.so ..
+--4490--   .. CRC mismatch (computed b2979fac wanted 1affc958)
+--4490--   Considering /usr/lib/debug/lib/x86_64-linux-gnu/libc-2.23.so ..
+--4490--   .. CRC is valid
+--4490-- REDIR: 0x4ec9a00 (libc.so.6:strcasecmp) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ec5280 (libc.so.6:strcspn) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ecbcf0 (libc.so.6:strncasecmp) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ec76f0 (libc.so.6:strpbrk) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ec7a80 (libc.so.6:strspn) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ec914b (libc.so.6:memcpy@GLIBC_2.2.5) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ec7400 (libc.so.6:rindex) redirected to 0x4c308a0 (rindex)
+--4490-- REDIR: 0x4ebe130 (libc.so.6:malloc) redirected to 0x4c2db20 (malloc)
+--4490-- REDIR: 0x4ec8060 (libc.so.6:__GI_strstr) redirected to 0x4c354d0 (__strstr_sse2)
+--4490-- REDIR: 0x4ec5ae0 (libc.so.6:strncat) redirected to 0x4a286f0 (_vgnU_ifunc_wrapper)
+--4490-- REDIR: 0x4ee30e0 (libc.so.6:__strncat_sse2_unaligned) redirected to 0x4c30dc0 (strncat)
+--4490-- REDIR: 0x4ebe4f0 (libc.so.6:free) redirected to 0x4c2ed80 (free)
+--4490-- REDIR: 0x4ec5720 (libc.so.6:strlen) redirected to 0x4c30f60 (strlen)
+BEGIN ALL TESTS
+--4490-- REDIR: 0x4ec93b0 (libc.so.6:__GI_mempcpy) redirected to 0x4c34fa0 (__GI_mempcpy)
+
+	~~~START testing global init~~~
+
+Test passed, no issues!
+freeing global/ACTrie
+freeing AC trie
+--4490-- REDIR: 0x4ed0760 (libc.so.6:strchrnul) redirected to 0x4c34da0 (strchrnul)
+killing ''
+	Starting Freeing Output
+	Done Freeing Output
+end freeing global/ACTrie
+
+
+	~~~END testing global init~~~
+
+
+	~~~START testing pattern input~~~
+
+Test passed, no issues!
+
+	~~~END testing pattern input~~~
+
+
+	~~~START testing novel trie build~~~
+
+!!!!BUILDING TRIE!!!!
+
+~~~Building Goto Structure + Output~~~
+
+Adding state "a" @ 0x5206b90
+Adding state "b" @ 0x5206c00
+Adding state "c" @ 0x5206c70
+Adding state "d" @ 0x5206ce0
+adding output: abcd. First char a, number of chars 4, for state 'd' @ 0x5206ce0
+---inserted pattern num 0 into the trie---
+Adding state "f" @ 0x5206ee0
+Adding state "a" @ 0x5206f50
+Adding state "d" @ 0x5206fc0
+Adding state "e" @ 0x5207030
+adding output: fade. First char f, number of chars 4, for state 'e' @ 0x5207030
+---inserted pattern num 1 into the trie---
+Adding state "d" @ 0x5207230
+Adding state "e" @ 0x52072a0
+adding output: de. First char d, number of chars 2, for state 'e' @ 0x52072a0
+---inserted pattern num 2 into the trie---
+skipping a, already in the trie @ 0x5206b90
+skipping b, already in the trie @ 0x5206c00
+Adding state "d" @ 0x5207400
+Adding state "e" @ 0x5207470
+adding output: abde. First char a, number of chars 4, for state 'e' @ 0x5207470
+---inserted pattern num 3 into the trie---
+skipping a, already in the trie @ 0x5206b90
+skipping b, already in the trie @ 0x5206c00
+adding output: ab. First char a, number of chars 2, for state 'b' @ 0x5206c00
+---inserted pattern num 4 into the trie---
+
+~~~Goto Structure + Output Build Completed~~~
+
+~~~Building Failure Traces into Trie + Output~~~
+
+Failure Q: Added state "a" @ 0x5206b90 to the queue
+Failure Q: Added state "f" @ 0x5206ee0 to the queue
+Failure Q: Added state "d" @ 0x5207230 to the queue
+Failure Q: Added state "b" @ 0x5206c00 to the queue
+ "b" set to fail at "" @ 0x5206b20 
+Failure Q: Added state "a" @ 0x5206f50 to the queue
+ "a" set to fail at "a" @ 0x5206b90 
+Failure Q: Added state "e" @ 0x52072a0 to the queue
+ "e" set to fail at "" @ 0x5206b20 
+Failure Q: Added state "c" @ 0x5206c70 to the queue
+ "c" set to fail at "" @ 0x5206b20 
+Failure Q: Added state "d" @ 0x5207400 to the queue
+ "d" set to fail at "d" @ 0x5207230 
+Failure Q: Added state "d" @ 0x5206fc0 to the queue
+ "d" set to fail at "d" @ 0x5207230 
+Failure Q: Added state "d" @ 0x5206ce0 to the queue
+ "d" set to fail at "d" @ 0x5207230 
+Failure Q: Added state "e" @ 0x5207470 to the queue
+ "e" set to fail at "e" @ 0x52072a0 
+
+ first output char: 'a'
+Failure Q: Added state "e" @ 0x5207030 to the queue
+ "e" set to fail at "e" @ 0x52072a0 
+
+ first output char: 'f'
+
+~~~Failure Traces + Output Built into the Trie~~~
+
+!!!!TRIE BUILD FINISHED!!!!
+
+patterns for matching:
+
+abcd
+fade
+de
+abde
+ab
+
+Test Input: abcd fade de abde abdede xxxx fadx abcefa abcde
+
+Patterns found in test input, in order (should be 16):
+
+ab
+abcd
+fade
+de
+de
+ab
+abde
+de
+ab
+abde
+de
+de
+ab
+ab
+abcd
+de
+
+pattsFound: 16
+
+freeing global/ACTrie
+freeing AC trie
+killing ''
+	Starting Freeing Output
+	Done Freeing Output
+killing 'a'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'b'
+	Starting Freeing Output
+	killo 'a'
+	killo 'b'
+	killo ''
+	Done Freeing Output
+killing 'c'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	killo 'a'
+	killo 'b'
+	killo 'c'
+	killo 'd'
+	killo ''
+	Done Freeing Output
+killing 'f'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'a'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'f'
+	killo 'a'
+	killo 'd'
+	killo 'e'
+	killo ''
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'a'
+	killo 'b'
+	killo 'd'
+	killo 'e'
+	killo ''
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+end freeing global/ACTrie
+
+
+Test passed, no issues!
+
+	~~~END testing novel trie build~~~
+
+
+	~~~START testing novel trie structure pointer analysis~~~
+
+!!!!BUILDING TRIE!!!!
+
+~~~Building Goto Structure + Output~~~
+
+Adding state "a" @ 0x5208250
+Adding state "d" @ 0x52082c0
+Adding state "c" @ 0x5208330
+Adding state "d" @ 0x52083a0
+adding output: adcd. First char a, number of chars 4, for state 'd' @ 0x52083a0
+---inserted pattern num 0 into the trie---
+Adding state "f" @ 0x52085a0
+Adding state "a" @ 0x5208610
+Adding state "d" @ 0x5208680
+Adding state "e" @ 0x52086f0
+adding output: fade. First char f, number of chars 4, for state 'e' @ 0x52086f0
+---inserted pattern num 1 into the trie---
+Adding state "d" @ 0x52088f0
+Adding state "e" @ 0x5208960
+adding output: de. First char d, number of chars 2, for state 'e' @ 0x5208960
+---inserted pattern num 2 into the trie---
+skipping a, already in the trie @ 0x5208250
+Adding state "b" @ 0x5208ac0
+Adding state "d" @ 0x5208b30
+Adding state "e" @ 0x5208ba0
+adding output: abde. First char a, number of chars 4, for state 'e' @ 0x5208ba0
+---inserted pattern num 3 into the trie---
+skipping a, already in the trie @ 0x5208250
+skipping b, already in the trie @ 0x5208ac0
+Adding state "a" @ 0x5208da0
+Adding state "b" @ 0x5208e10
+adding output: abab. First char a, number of chars 4, for state 'b' @ 0x5208e10
+---inserted pattern num 4 into the trie---
+
+~~~Goto Structure + Output Build Completed~~~
+
+~~~Building Failure Traces into Trie + Output~~~
+
+Failure Q: Added state "a" @ 0x5208250 to the queue
+Failure Q: Added state "f" @ 0x52085a0 to the queue
+Failure Q: Added state "d" @ 0x52088f0 to the queue
+Failure Q: Added state "d" @ 0x52082c0 to the queue
+ "d" set to fail at "d" @ 0x52088f0 
+Failure Q: Added state "b" @ 0x5208ac0 to the queue
+ "b" set to fail at "" @ 0x52081e0 
+Failure Q: Added state "a" @ 0x5208610 to the queue
+ "a" set to fail at "a" @ 0x5208250 
+Failure Q: Added state "e" @ 0x5208960 to the queue
+ "e" set to fail at "" @ 0x52081e0 
+Failure Q: Added state "c" @ 0x5208330 to the queue
+ "c" set to fail at "" @ 0x52081e0 
+Failure Q: Added state "d" @ 0x5208b30 to the queue
+ "d" set to fail at "d" @ 0x52088f0 
+Failure Q: Added state "a" @ 0x5208da0 to the queue
+ "a" set to fail at "a" @ 0x5208250 
+Failure Q: Added state "d" @ 0x5208680 to the queue
+ "d" set to fail at "d" @ 0x52082c0 
+Failure Q: Added state "d" @ 0x52083a0 to the queue
+ "d" set to fail at "d" @ 0x52088f0 
+Failure Q: Added state "e" @ 0x5208ba0 to the queue
+ "e" set to fail at "e" @ 0x5208960 
+
+ first output char: 'a'
+Failure Q: Added state "b" @ 0x5208e10 to the queue
+ "b" set to fail at "b" @ 0x5208ac0 
+Failure Q: Added state "e" @ 0x52086f0 to the queue
+ "e" set to fail at "e" @ 0x5208960 
+
+ first output char: 'f'
+
+~~~Failure Traces + Output Built into the Trie~~~
+
+!!!!TRIE BUILD FINISHED!!!!
+
+freeing global/ACTrie
+freeing AC trie
+killing ''
+	Starting Freeing Output
+	Done Freeing Output
+killing 'a'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'c'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	killo 'a'
+	killo 'd'
+	killo 'c'
+	killo 'd'
+	killo ''
+	Done Freeing Output
+killing 'f'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'a'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'f'
+	killo 'a'
+	killo 'd'
+	killo 'e'
+	killo ''
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+killing 'b'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'd'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'e'
+	Starting Freeing Output
+	killo 'a'
+	killo 'b'
+	killo 'd'
+	killo 'e'
+	killo ''
+	killo 'd'
+	killo 'e'
+	killo ''
+	Done Freeing Output
+killing 'a'
+	Starting Freeing Output
+	Done Freeing Output
+killing 'b'
+	Starting Freeing Output
+	killo 'a'
+	killo 'b'
+	killo 'a'
+	killo 'b'
+	killo ''
+	Done Freeing Output
+end freeing global/ACTrie
+
+Test passed, no issues!
+
+	~~~END testing novel trie structure pointer analysis~~~
+
+END ALL TESTS
+4 tests passed out of 4
+==4490== 
+==4490== HEAP SUMMARY:
+==4490==     in use at exit: 0 bytes in 0 blocks
+==4490==   total heap usage: 207 allocs, 207 frees, 9,158 bytes allocated
+==4490== 
+==4490== All heap blocks were freed -- no leaks are possible
+==4490== 
+==4490== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==4490== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
